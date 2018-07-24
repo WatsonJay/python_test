@@ -23,12 +23,42 @@ def main():
 def get_url_music(url):
     ipmain = free_proxyIP
     ip = ipmain.proxyip()
-    html = requests.get(url,headers = headers ,proxies=ip, timeout=3)
+    IP = {'http':ip}
+    html = requests.get(url,headers=headers ,proxies=IP, timeout=3)
     selector = etree.HTML(html.text)
     music_refs = selector.xpath('//a[@class="nbg"]/@href')
     for music_ref in music_refs:
         get_music_info(music_ref)
 
+def  get_music_info(url):
+    ipmain = free_proxyIP
+    ip = ipmain.proxyip()
+    IP = {'http':ip}
+    html = requests.get(url,headers = headers ,proxies=IP, timeout=3)
+    selector = etree.HTML(html.text)
+    name = selector.xpath('//*[@id="wrapper"]/h1/span/text()')[0]
+    author = re.findall('表演者：.*?>(.*?)</a>',html.text,re.S)[0]
+    styles = re.findall('<span class="pl">流派:</span>&nbsp;(.*?)<br />',html.text,re.S)
+    if len(styles) == 0:
+        style = '未知'
+    else:
+        style = styles[0].strip()
+    date = re.findall('<span class="pl">发行时间:</span>&nbsp;(.*?)<br />', html.text, re.S)[0].strip()
+    publishs = re.findall('<span class="pl">出版者:</span>&nbsp;(.*?)<br />', html.text, re.S)
+    if len(publishs) == 0:
+        publish = '未知'
+    else:
+        publish = publishs[0].strip()
+    score = selector.xpath('//*[@id="interest_sectl"]/div/div[2]/strong/text()')[0]
+    print(name,style,date,publish,score)
+    info = {
+        'name' : name,
+        'style' : style,
+        'date': date,
+        'publisher': publish,
+        'score': score
+    }
+    musictrop.insert_one(info)
 
 if __name__ == '__main__':
     main()
