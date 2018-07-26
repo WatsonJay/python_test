@@ -3,12 +3,11 @@ import requests
 from lxml import etree
 import time
 import csv
+import random
 
 url = 'https://www.kuaidaili.com/free/intr/{}/'
 alive_ip = []
-csv_file = open('IP/validate.csv','w',newline='')
-writer = csv.writer(csv_file)
-writer.writerow(['ip'])
+
 
 def get_one_page(url):
     try:
@@ -44,14 +43,13 @@ def validate(ip):
    except:
        print("无效")
 
-def save():
+def save(writer):
        for ip in alive_ip:
            writer.writerow([ip])
            print(ip)
        print("成功保存所有有效 ip ")
-       csv_file.close()
 
-def check():
+def check(writer):
     with open('IP/456.txt', 'r') as f:
         lines = f.readlines()
         # 我们去掉lines每一项后面的\n\r之类的空格
@@ -59,14 +57,32 @@ def check():
         ips = list(map(lambda x: x.strip(), [line for line in lines]))  # strip() 方法用于移除字符串头尾指定的字符，默认就是空格或换行符。
         pool = ThreadPool(20)  # 多线程 设置并发数量！
         pool.map(validate, ips)  # 用 map 简捷实现 Python 程序并行化
-        save()  # 保存能用的 IP
+        save(writer)  # 保存能用的 IP
+
+def proxyip():
+    csv_file_read1 = open('IP/validate.csv', 'r')
+    csv_file_read = open('IP/validate.csv', 'r')
+    i=len(csv_file_read1.readlines())
+    a = random.randint(1,i)
+    lines = csv.reader(csv_file_read)
+    for line in lines:
+        if lines.line_num == a :
+            return line[0]
+    csv_file_read.close()
+
 
 def main():
+    csv_file = open('IP/validate.csv', 'w', newline='')
+    writer = csv.writer(csv_file)
+    writer.writerow(['ip'])
     url = 'https://www.kuaidaili.com/free/intr/{}/'  # 这是网站的 url
     for i in range(1, 40):  # 爬取四十页
         time.sleep(1)  # 休息 1 秒
         get_one_parse(url.format(i))
-    check()
+    check(writer)
+    csv_file.close()
 
 if __name__ == '__main__':
+    #check()
+    #proxyip()
     main()
