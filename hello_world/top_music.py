@@ -8,7 +8,7 @@ from hello_world import free_proxyIP
 client = pymongo.MongoClient('106.14.220.77',27017)
 mydb = client['mydb']
 musictrop = mydb['musictop']
-
+ipmain = free_proxyIP
 headers = {
     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101 Firefox/60.0'
 }
@@ -21,7 +21,6 @@ def main():
         get_url_music(url)
 
 def get_url_music(url):
-    ipmain = free_proxyIP
     ip = ipmain.proxyip()
     IP = {'http':ip}
     html = requests.get(url,headers=headers ,proxies=IP, timeout=3)
@@ -31,7 +30,6 @@ def get_url_music(url):
         get_music_info(music_ref)
 
 def  get_music_info(url):
-    ipmain = free_proxyIP
     ip = ipmain.proxyip()
     IP = {'http':ip}
     html = requests.get(url,headers = headers ,proxies=IP, timeout=3)
@@ -61,5 +59,6 @@ def  get_music_info(url):
     musictrop.insert_one(info)
 
 if __name__ == '__main__':
+    ipmain.main()
     main()
 
