@@ -1,5 +1,7 @@
 from PIL import Image
 from PIL.ExifTags import TAGS
+import exifread
+
 
 def photoExif(imageFilePath):
     try:
@@ -15,3 +17,16 @@ def photoExif(imageFilePath):
                     print('[*]contains GPS MetaData,' + exifGPS)
     except:
         pass
+
+def phot_exifRead(imageFilePath):
+    try:
+        imgfile = open(imageFilePath, 'rb')
+        tags = exifread.process_file(imgfile)
+        Exif_Date = tags["EXIF DateTimeOriginal"].printable
+    except:
+        return "ERROR:请确保照片包含经纬度等EXIF信息。"
+    else:
+        return Exif_Date
+
+if __name__ == '__main__':
+    phot_exifRead('G:/yw/DCIM/DCIM/100_CFV5/DSC_0001.JPG')
