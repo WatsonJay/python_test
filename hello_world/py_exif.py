@@ -18,7 +18,15 @@ def photoExif(imageFilePath):
     except Exception as e:
         print(e)
 
-def 
+def phot_exifRead(imageFilePath):
+    try:
+        imgfile = open(imageFilePath, 'rb')
+        tags = exifread.process_file(imgfile)
+        Exif_Date = tags["EXIF DateTimeOriginal"].printable
+    except:
+        return "ERROR:请确保照片包含经纬度等EXIF信息。"
+    else:
+        return Exif_Date
 
 if __name__ == '__main__':
-    photoExif("G:/DICM/班级/IMG_20140315_090402.jpg")
+    phot_exifRead('G:/yw/DCIM/DCIM/100_CFV5/DSC_0001.JPG')
