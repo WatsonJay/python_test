@@ -5,7 +5,6 @@
 # Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
-import os
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtMultimedia import QMediaPlayer
@@ -15,20 +14,14 @@ class Ui_musicPlayer(object):
     def setupUi(self, musicPlayer):
         musicPlayer.setObjectName("musicPlayer")
         musicPlayer.resize(491, 225)
-        self.songs_list = []
-        self.song_formats = ['mp3', 'm4a', 'flac', 'wav', 'ogg']
         self.player = QMediaPlayer()
-        self.cur_path = os.path.abspath(os.path.dirname(__file__))
-        self.cur_playing_song = ''
-        self.is_switching = False
-        self.is_pause = True
         self.centralwidget = QtWidgets.QWidget(musicPlayer)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.listView = QtWidgets.QListView(self.centralwidget)
-        self.listView.setObjectName("listView")
-        self.horizontalLayout.addWidget(self.listView)
+        self.listWidget = QtWidgets.QListWidget(self.centralwidget)
+        self.listWidget.setObjectName("listWidget")
+        self.horizontalLayout.addWidget(self.listWidget)
         self.verticalLayout = QtWidgets.QVBoxLayout()
         self.verticalLayout.setObjectName("verticalLayout")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
@@ -71,7 +64,7 @@ class Ui_musicPlayer(object):
         self.playStop.setObjectName("playStop")
         self.verticalLayout_2.addWidget(self.playStop)
         self.horizontalLayout.addLayout(self.verticalLayout_2)
-        self.horizontalLayout.setStretch(0, 4)
+        self.horizontalLayout.setStretch(0, 5)
         self.horizontalLayout.setStretch(1, 4)
         self.horizontalLayout.setStretch(2, 2)
         musicPlayer.setCentralWidget(self.centralwidget)

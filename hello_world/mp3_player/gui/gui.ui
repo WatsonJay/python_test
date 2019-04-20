@@ -14,9 +14,9 @@
    <string>简易播放器</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout" stretch="4,4,2">
+   <layout class="QHBoxLayout" name="horizontalLayout" stretch="5,4,2">
     <item>
-     <widget class="QListView" name="listView"/>
+     <widget class="QListWidget" name="listWidget"/>
     </item>
     <item>
      <layout class="QVBoxLayout" name="verticalLayout" stretch="2,2,2,2,2">
