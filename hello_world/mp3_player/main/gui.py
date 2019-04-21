@@ -7,14 +7,12 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtMultimedia import QMediaPlayer
 
 
 class Ui_musicPlayer(object):
     def setupUi(self, musicPlayer):
         musicPlayer.setObjectName("musicPlayer")
         musicPlayer.resize(491, 225)
-        self.player = QMediaPlayer()
         self.centralwidget = QtWidgets.QWidget(musicPlayer)
         self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QtWidgets.QHBoxLayout(self.centralwidget)
