@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>自动聊天机器人</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -39,12 +39,20 @@
        <number>40</number>
       </property>
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="open_reply">
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>50</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color:rgb(149,236,105);</string>
@@ -55,12 +63,20 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="close_reply">
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>50</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color:rgb(149,236,105);</string>
@@ -71,12 +87,20 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_3">
+       <widget class="QPushButton" name="timer_set">
         <property name="minimumSize">
          <size>
           <width>139</width>
           <height>50</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color:rgb(149,236,105);</string>
@@ -87,12 +111,20 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton_4">
+       <widget class="QPushButton" name="introduction">
         <property name="minimumSize">
          <size>
           <width>0</width>
           <height>50</height>
          </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
         </property>
         <property name="styleSheet">
          <string notr="true">background-color:rgb(149,236,105);</string>
@@ -105,7 +137,7 @@
      </layout>
     </item>
     <item>
-     <widget class="QTextBrowser" name="textBrowser">
+     <widget class="QTextBrowser" name="infomation_area">
       <property name="styleSheet">
        <string notr="true">background-color:rgb(149,236,105);</string>
       </property>
