@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>292</width>
-    <height>213</height>
+    <width>381</width>
+    <height>234</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -34,7 +34,7 @@
       <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text">
-      <string>TextLabel</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;使用说明&lt;/p&gt;&lt;p&gt;1.自动回复:根据设置中的群名以及关键词选择回复&lt;/p&gt;&lt;p&gt;2.防剧透助手:设置剧名以及剧情关键词，自动过滤剧透&lt;/p&gt;&lt;p&gt;3.防撤回工具:开启后，被撤回的消息在文件传输助手中显示&lt;/p&gt;&lt;p&gt;4.定时设定:定时自动回复&lt;/p&gt;&lt;p&gt;5.解释权归公众号:二爷的私人助手所有&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignHCenter|Qt::AlignTop</set>

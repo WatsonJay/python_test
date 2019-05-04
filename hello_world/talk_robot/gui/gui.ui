@@ -19,7 +19,7 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,7">
     <item>
-     <layout class="QVBoxLayout" name="verticalLayout" stretch="2,0,2,2">
+     <layout class="QVBoxLayout" name="verticalLayout" stretch="2,0,0,2,2">
       <property name="spacing">
        <number>4</number>
       </property>
@@ -39,7 +39,7 @@
        <number>40</number>
       </property>
       <item>
-       <widget class="QPushButton" name="open_reply">
+       <widget class="QPushButton" name="auto_reply">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -63,7 +63,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="close_reply">
+       <widget class="QPushButton" name="film_filter">
         <property name="minimumSize">
          <size>
           <width>0</width>
@@ -82,7 +82,31 @@
          <string notr="true">background-color:rgb(149,236,105);</string>
         </property>
         <property name="text">
-         <string>关闭自动回复</string>
+         <string>防剧透助手</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="message_back">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>50</height>
+         </size>
+        </property>
+        <property name="font">
+         <font>
+          <family>微软雅黑</family>
+          <pointsize>11</pointsize>
+          <weight>75</weight>
+          <bold>true</bold>
+         </font>
+        </property>
+        <property name="styleSheet">
+         <string notr="true">background-color:rgb(149,236,105);</string>
+        </property>
+        <property name="text">
+         <string>防撤回工具</string>
         </property>
        </widget>
       </item>
@@ -154,8 +178,20 @@
      <height>23</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menu">
+    <property name="title">
+     <string>设置</string>
+    </property>
+    <addaction name="actionsetting"/>
+   </widget>
+   <addaction name="menu"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionsetting">
+   <property name="text">
+    <string>setting</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
