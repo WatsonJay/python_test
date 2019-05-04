@@ -82,7 +82,7 @@
          <string notr="true">background-color:rgb(149,236,105);</string>
         </property>
         <property name="text">
-         <string>防剧透助手</string>
+         <string>开启防剧透助手</string>
         </property>
        </widget>
       </item>
@@ -106,7 +106,7 @@
          <string notr="true">background-color:rgb(149,236,105);</string>
         </property>
         <property name="text">
-         <string>防撤回工具</string>
+         <string>开启防撤回工具</string>
         </property>
        </widget>
       </item>
