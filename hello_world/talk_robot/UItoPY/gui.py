@@ -109,8 +109,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "自动聊天机器人"))
         self.auto_reply.setText(_translate("MainWindow", "开启自动回复"))
-        self.film_filter.setText(_translate("MainWindow", "防剧透助手"))
-        self.message_back.setText(_translate("MainWindow", "防撤回工具"))
+        self.film_filter.setText(_translate("MainWindow", "开启防剧透助手"))
+        self.message_back.setText(_translate("MainWindow", "开启防撤回工具"))
         self.timer_set.setText(_translate("MainWindow", "定时设定"))
         self.introduction.setText(_translate("MainWindow", "使用说明"))
         self.menu.setTitle(_translate("MainWindow", "设置"))
