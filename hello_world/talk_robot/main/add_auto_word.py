@@ -32,12 +32,12 @@ class Ui_WordDialog(object):
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
-        self.lineEdit = QtWidgets.QLineEdit(Dialog)
-        self.lineEdit.setObjectName("lineEdit")
-        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lineEdit)
-        self.textEdit = QtWidgets.QTextEdit(Dialog)
-        self.textEdit.setObjectName("textEdit")
-        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.textEdit)
+        self.keyWord = QtWidgets.QLineEdit(Dialog)
+        self.keyWord.setObjectName("keyWord")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.keyWord)
+        self.reply = QtWidgets.QLineEdit(Dialog)
+        self.reply.setObjectName("reply")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.reply)
         self.horizontalLayout.addLayout(self.formLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         font = QtGui.QFont()
@@ -52,8 +52,6 @@ class Ui_WordDialog(object):
         self.horizontalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(Dialog)
-        self.buttonBox.accepted.connect(Dialog.accept)
-        self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
