@@ -2,13 +2,13 @@
 
 # Form implementation generated from reading ui file 'setting.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_Dialog(object):
+class Ui_settingDialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
         Dialog.resize(380, 316)
@@ -28,6 +28,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.listView = QtWidgets.QListView(self.tab)
         self.listView.setStyleSheet("background-color:rgb(149,236,105);")
+        self.listView.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listView.setObjectName("listView")
         self.horizontalLayout_3.addWidget(self.listView)
         self.verticalLayout_5 = QtWidgets.QVBoxLayout()
@@ -70,7 +71,14 @@ class Ui_Dialog(object):
         self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.tab_2)
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.tableWidget = QtWidgets.QTableWidget(self.tab_2)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        font.setBold(False)
+        font.setWeight(50)
+        self.tableWidget.setFont(font)
         self.tableWidget.setStyleSheet("background-color:rgb(149,236,105);")
+        self.tableWidget.setAutoScroll(True)
+        self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.setShowGrid(True)
         self.tableWidget.setRowCount(0)
         self.tableWidget.setColumnCount(2)
@@ -81,13 +89,11 @@ class Ui_Dialog(object):
         item = QtWidgets.QTableWidgetItem()
         item.setBackground(QtGui.QColor(149, 236, 105))
         self.tableWidget.setHorizontalHeaderItem(1, item)
-        self.tableWidget.horizontalHeader().setCascadingSectionResizes(False)
-        self.tableWidget.horizontalHeader().setMinimumSectionSize(40)
-        self.tableWidget.horizontalHeader().setSortIndicatorShown(False)
+        self.tableWidget.horizontalHeader().setDefaultSectionSize(120)
+        self.tableWidget.horizontalHeader().setMinimumSectionSize(90)
         self.tableWidget.horizontalHeader().setStretchLastSection(True)
-        self.tableWidget.verticalHeader().setVisible(False)
-        self.tableWidget.verticalHeader().setDefaultSectionSize(40)
-        self.tableWidget.verticalHeader().setStretchLastSection(False)
+        self.tableWidget.verticalHeader().setDefaultSectionSize(20)
+        self.tableWidget.verticalHeader().setMinimumSectionSize(15)
         self.horizontalLayout_4.addWidget(self.tableWidget)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout()
         self.verticalLayout_2.setContentsMargins(-1, 0, -1, 40)
@@ -137,6 +143,7 @@ class Ui_Dialog(object):
         self.horizontalLayout.addWidget(self.label)
         self.comboBox = QtWidgets.QComboBox(self.tab_3)
         self.comboBox.setStyleSheet("background-color:rgb(149,236,105);")
+        self.comboBox.setEditable(False)
         self.comboBox.setObjectName("comboBox")
         self.horizontalLayout.addWidget(self.comboBox)
         self.add_film = QtWidgets.QPushButton(self.tab_3)
@@ -171,6 +178,7 @@ class Ui_Dialog(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.listWidget = QtWidgets.QListWidget(self.groupBox)
         self.listWidget.setStyleSheet("background-color:rgb(149,236,105);")
+        self.listWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.listWidget.setObjectName("listWidget")
         self.horizontalLayout_2.addWidget(self.listWidget)
         self.verticalLayout_4 = QtWidgets.QVBoxLayout()
@@ -223,7 +231,7 @@ class Ui_Dialog(object):
         self.verticalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(Dialog)
-        self.setting_window.setCurrentIndex(2)
+        self.setting_window.setCurrentIndex(0)
         self.buttonBox.accepted.connect(Dialog.accept)
         self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
