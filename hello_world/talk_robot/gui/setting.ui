@@ -47,7 +47,7 @@
           <number>40</number>
          </property>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="add_qun">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -70,7 +70,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_10">
+          <widget class="QPushButton" name="modif_qun">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -93,7 +93,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_11">
+          <widget class="QPushButton" name="del_qun">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -200,7 +200,7 @@
           <number>40</number>
          </property>
          <item>
-          <widget class="QPushButton" name="pushButton_4">
+          <widget class="QPushButton" name="add_word">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -223,7 +223,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_5">
+          <widget class="QPushButton" name="modif_word">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -246,7 +246,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_6">
+          <widget class="QPushButton" name="del_word">
            <property name="minimumSize">
             <size>
              <width>0</width>
@@ -297,7 +297,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton">
+          <widget class="QPushButton" name="add_film">
            <property name="minimumSize">
             <size>
              <width>40</width>
@@ -320,7 +320,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_8">
+          <widget class="QPushButton" name="del_film">
            <property name="minimumSize">
             <size>
              <width>40</width>
@@ -363,7 +363,7 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="QPushButton" name="pushButton_2">
+             <widget class="QPushButton" name="add_filter">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -386,7 +386,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_7">
+             <widget class="QPushButton" name="modif_filter">
               <property name="minimumSize">
                <size>
                 <width>0</width>
@@ -409,7 +409,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_9">
+             <widget class="QPushButton" name="del_filter">
               <property name="minimumSize">
                <size>
                 <width>0</width>
