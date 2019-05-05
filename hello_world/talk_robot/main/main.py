@@ -24,7 +24,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.settingWindow.exec_()
         self.settingWindow.destroy()
 
-        # 打开介绍窗口
+    # 打开介绍窗口
     def infoShow(self):
         self.introWindow = MyIntroWindow()
         self.introWindow.exec_()
@@ -39,7 +39,10 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         super(MySettingWindow, self).__init__(parent)
         self.setupUi(self)
         self.loadCsv("config/keyword.csv")
+        self.add_word.clicked.connect(self.addwordShow)
+        self.modif_word.clicked.connect(self.modwordShow)
 
+    # 读取csv配置文件
     def loadCsv(self, fileName):
         with open(fileName, "r" , encoding='utf-8') as fileInput:
             reader = csv.reader(fileInput)
@@ -48,9 +51,48 @@ class MySettingWindow(QDialog, Ui_settingDialog):
                     continue
                 rowPosition = self.tableWidget.rowCount()
                 self.tableWidget.insertRow(rowPosition)
-                self.tableWidget.setItem(rowPosition, 0, QTableWidgetItem(row[0]))
-                self.tableWidget.setItem(rowPosition, 1, QTableWidgetItem(row[1]))
+                for j in  range(len(row)):
+                    self.tableWidget.setItem(rowPosition, j, QTableWidgetItem(row[j]))
 
+    # 打开新增关键词窗口
+    def addwordShow(self):
+        self.wordWindow = MyWordWindow()
+        if self.wordWindow.exec_():
+            # 数据插入表格
+            keyword = self.wordWindow.getKeyword()
+            reply = self.wordWindow.getreply()
+            line = ''
+            self.modifyline(keyword,reply,line)
+        self.wordWindow.destroy()
+
+    # 打开编辑关键词窗口
+    def modwordShow(self):
+        if self.tableWidget.currentIndex().row() == -1:
+            index = 0
+        else:
+            index = self.tableWidget.currentIndex().row()
+        keyword =self.tableWidget.item(index,0).text()
+        reply = self.tableWidget.item(index, 1).text()
+        self.wordWindow = MyWordWindow()
+        self.wordWindow.setKeyword(keyword)
+        self.wordWindow.setreply(reply)
+        if self.wordWindow.exec_():
+            # 数据插入表格
+            keyword = self.wordWindow.getKeyword()
+            reply = self.wordWindow.getreply()
+            line = index
+            self.modifyline(keyword, reply, line)
+        self.wordWindow.destroy()
+
+    # 新增一行数据
+    def modifyline(self,keyword,reply,line):
+        if line == '':
+            rowPosition = self.tableWidget.rowCount()
+            self.tableWidget.insertRow(rowPosition)
+        else:
+            rowPosition = line
+        self.tableWidget.setItem(rowPosition, 0, QTableWidgetItem(keyword))
+        self.tableWidget.setItem(rowPosition, 1, QTableWidgetItem(reply))
 
 # 介绍窗口
 class MyIntroWindow(QDialog, Ui_introDialog):
@@ -63,6 +105,20 @@ class MyWordWindow(QDialog, Ui_WordDialog):
     def __init__(self, parent=None):
         super(MyWordWindow, self).__init__(parent)
         self.setupUi(self)
+        self.buttonBox.accepted.connect(self.accept)
+        self.buttonBox.rejected.connect(self.reject)
+
+    def getKeyword(self):
+        return self.keyWord.text()
+
+    def getreply(self):
+        return self.reply.text()
+
+    def setKeyword(self,keyword):
+        return self.keyWord.setText(keyword)
+
+    def setreply(self,reply):
+        return self.reply.setText(reply)
 
 # 电影窗口
 class MyFilmWindow(QDialog, Ui_FilmDialog):
