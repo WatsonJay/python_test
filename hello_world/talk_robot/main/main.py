@@ -77,8 +77,10 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         except Exception as e:
             pass
 
+    # 加载过滤词
     def loadFilter(self):
         try:
+            self.filterWordList.clear()
             conf = config()
             index = self.filmNameBox.currentIndex()
             filmName = self.filmNameBox.itemText(index)
