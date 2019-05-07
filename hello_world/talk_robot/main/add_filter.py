@@ -42,6 +42,8 @@ class Ui_FilterDialog(object):
         self.horizontalLayout_2.addWidget(self.buttonBox)
 
         self.retranslateUi(Dialog)
+        self.buttonBox.accepted.connect(Dialog.accept)
+        self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

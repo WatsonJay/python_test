@@ -35,7 +35,7 @@ class Ui_WordDialog(object):
         self.keyWord = QtWidgets.QLineEdit(Dialog)
         self.keyWord.setObjectName("keyWord")
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.keyWord)
-        self.reply = QtWidgets.QLineEdit(Dialog)
+        self.reply = QtWidgets.QTextEdit(Dialog)
         self.reply.setObjectName("reply")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.reply)
         self.horizontalLayout.addLayout(self.formLayout)
@@ -52,6 +52,8 @@ class Ui_WordDialog(object):
         self.horizontalLayout.addWidget(self.buttonBox)
 
         self.retranslateUi(Dialog)
+        self.buttonBox.accepted.connect(Dialog.accept)
+        self.buttonBox.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):

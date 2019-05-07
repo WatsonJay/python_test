@@ -25,9 +25,9 @@ class Ui_FilmDialog(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
-        self.lineEdit = QtWidgets.QLineEdit(Dialog)
-        self.lineEdit.setObjectName("lineEdit")
-        self.horizontalLayout.addWidget(self.lineEdit)
+        self.filmName = QtWidgets.QLineEdit(Dialog)
+        self.filmName.setObjectName("filmName")
+        self.horizontalLayout.addWidget(self.filmName)
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
         self.buttonBox_2 = QtWidgets.QDialogButtonBox(Dialog)
         font = QtGui.QFont()
@@ -42,6 +42,8 @@ class Ui_FilmDialog(object):
         self.horizontalLayout_2.addWidget(self.buttonBox_2)
 
         self.retranslateUi(Dialog)
+        self.buttonBox_2.accepted.connect(Dialog.accept)
+        self.buttonBox_2.rejected.connect(Dialog.reject)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
 
     def retranslateUi(self, Dialog):
