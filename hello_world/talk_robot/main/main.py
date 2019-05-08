@@ -24,7 +24,9 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     def settingShow(self):
         self.settingWindow = MySettingWindow()
         if self.settingWindow.exec_():
-            self.Tips("通过")
+            self.settingWindow.Save()
+            self.settingWindow.writeCsv("config/keyword.csv")
+            self.Tips("保存成功")
         else:
             self.settingWindow.tempDelete()
         self.settingWindow.destroy()
@@ -211,7 +213,7 @@ class MySettingWindow(QDialog, Ui_settingDialog):
                                    QMessageBox.No)  # 这里是固定格式，yes/no不能动
         # 判断消息的返回值
         if msg == QMessageBox.Yes:
-            self.filterWordList.takeItem(self.filterWordList.currentIndex())
+            self.filterWordList.takeItem(self.filterWordList.currentRow())
         else:
             return
 
@@ -228,6 +230,55 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         conf = config()
         for tempfilmName in self.tempfilmNames:
             conf.delSection(tempfilmName)
+
+    # 打开新增群名窗口
+    def addQunShow(self):
+        self.qunWindow = MyQunWindow()
+        if self.qunWindow.exec_():
+            # 数据插入表格
+            qunName = self.qunWindow.getQunName()
+            self.qunNameList.addItem(qunName)
+        self.qunWindow.destroy()
+
+    # 打开编辑群名窗口
+    def modifQunShow(self):
+        self.qunWindow = MyQunWindow()
+        index = self.qunNameList.currentRow()
+        qunName = self.qunNameList.item(index).text()
+        self.qunWindow.setQunName(qunName)
+        if self.qunWindow.exec_():
+            # 数据插入表格
+            qunName = self.qunWindow.getQunName()
+            self.qunName.takeItem(index)
+            self.qunNameList.addItem(qunName)
+        self.qunWindow.destroy()
+
+    # 群名删除
+    def delQun(self):
+        msg = QMessageBox.question(self, "删除警告", "你确定删除吗？", QMessageBox.Yes | QMessageBox.No,
+                                   QMessageBox.No)  # 这里是固定格式，yes/no不能动
+        # 判断消息的返回值
+        if msg == QMessageBox.Yes:
+            self.qunNameList.takeItem(self.qunNameList.currentRow())
+        else:
+            return
+
+    # 临时保存
+    def Save(self):
+        list = []
+        conf = config()
+        for i in range(self.qunNameList.count()):
+            list.append(self.qunNameList.item(i).text())
+        conf.addoption('qun', 'name', conf.split(list))
+
+    def writeCsv(self, fileName):
+        with open(fileName, "w", encoding='utf-8', newline ='') as csvfile:
+            writer = csv.writer(csvfile)  # 先写入columns_name
+            writer.writerow(["关键词","回复"])
+            for index in range(self.tableWidget.rowCount()):
+                keyword = self.tableWidget.item(index, 0).text()
+                reply = self.tableWidget.item(index, 1).text()
+                writer.writerow([keyword, reply])
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
