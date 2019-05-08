@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import configparser
 
 class config:
@@ -10,7 +11,7 @@ class config:
 
     # 写入配置文件
     def writeConfig(self,config):
-        config.write(open("config/config.ini", "w"))
+        config.write(open("config/config.ini", "w", encoding='utf-8'))
 
     # 新增section
     def addSection(self, section):
@@ -52,10 +53,16 @@ class config:
 
     # 字符串切割成数组
     def splitword(self,word):
-       list = word.split(',')
-       return list
+        if word != '':
+            list = word.split(',')
+        else:
+            list = []
+        return list
 
     # 数组转成字符串
     def split(self, list):
-        word = ','.join(list)
+        if len(list) > 0:
+            word = ','.join(list)
+        else:
+            word = ''
         return word
