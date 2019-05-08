@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import csv
 import sys
 
@@ -24,6 +25,8 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.settingWindow = MySettingWindow()
         if self.settingWindow.exec_():
             self.Tips("通过")
+        else:
+            self.settingWindow.tempDelete()
         self.settingWindow.destroy()
 
     # 打开介绍窗口
@@ -37,7 +40,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
 # 设置窗口
 class MySettingWindow(QDialog, Ui_settingDialog):
-    tempfilmName = []
+    tempfilmNames = []
     def __init__(self, parent=None):
         super(MySettingWindow, self).__init__(parent)
         self.setupUi(self)
@@ -49,6 +52,12 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         self.add_film.clicked.connect(self.addfilmName)
         self.del_film.clicked.connect(self.delfilmName)
         self.filmNameBox.currentTextChanged.connect(self.loadFilter)
+        self.add_filter.clicked.connect(self.addFilterShow)
+        self.modif_filter.clicked.connect(self.modFilterShow)
+        self.del_filter.clicked.connect(self.delFilter)
+        self.add_qun.clicked.connect(self.addQunShow)
+        self.modif_qun.clicked.connect(self.modifQunShow)
+        self.del_qun.clicked.connect(self.delQun)
 
     # 读取csv配置文件
     def loadCsv(self, fileName):
@@ -137,7 +146,7 @@ class MySettingWindow(QDialog, Ui_settingDialog):
             return
         else:
             index = self.tableWidget.currentIndex().row()
-        msg = QMessageBox.question(self, "退出警告", "你确定退出吗？", QMessageBox.Yes | QMessageBox.No,
+        msg = QMessageBox.question(self, "删除警告", "你确定删除吗？", QMessageBox.Yes | QMessageBox.No,
                                    QMessageBox.No)  # 这里是固定格式，yes/no不能动
         # 判断消息的返回值
         if msg == QMessageBox.Yes:
@@ -152,7 +161,7 @@ class MySettingWindow(QDialog, Ui_settingDialog):
             # 数据插入表格
             conf = config()
             filmName = self.filmWindow.getFilmName()
-            self.tempfilmName.append(filmName)
+            self.tempfilmNames.append(filmName)
             self.filmNameBox.addItem(filmName)
             conf.addSection(filmName)
         self.filmWindow.destroy()
@@ -165,8 +174,60 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         filmName = self.filmNameBox.itemText(index)
         if filmName != '---请选择---':
             conf = config()
+            if filmName in self.tempfilmNames:
+                self.tempfilmNames.remove(filmName)
             conf.delSection(filmName)
             self.filmNameBox.removeItem(index)
+
+    # 打开新增电影过滤词窗口
+    def addFilterShow(self):
+        self.filterWindow = MyFilterwindow()
+        if self.filterWindow.exec_():
+            # 数据插入表格
+            Filter = self.filterWindow.getFilter()
+            filmName=self.filmNameBox.itemText(self.filmNameBox.currentIndex())
+            self.filterWordList.addItem(Filter)
+            self.tempSave(filmName)
+        self.filterWindow.destroy()
+
+    # 打开编辑电影过滤词窗口
+    def modFilterShow(self):
+        self.filterWindow = MyFilterwindow()
+        index = self.filterWordList.currentRow()
+        filterWord = self.filterWordList.item(index).text()
+        self.filterWindow.setFilter(filterWord)
+        if self.filterWindow.exec_():
+            # 数据插入表格
+            Filter = self.filterWindow.getFilter()
+            filmName = self.filmNameBox.itemText(self.filmNameBox.currentIndex())
+            self.filterWordList.takeItem(index)
+            self.filterWordList.addItem(Filter)
+            self.tempSave(filmName)
+        self.filterWindow.destroy()
+
+    # 删除电影过滤词
+    def delFilter(self):
+        msg = QMessageBox.question(self, "删除警告", "你确定删除吗？", QMessageBox.Yes | QMessageBox.No,
+                                   QMessageBox.No)  # 这里是固定格式，yes/no不能动
+        # 判断消息的返回值
+        if msg == QMessageBox.Yes:
+            self.filterWordList.takeItem(self.filterWordList.currentIndex())
+        else:
+            return
+
+    #临时保存
+    def tempSave(self,filmName):
+        list = []
+        conf = config()
+        for i in range(self.filterWordList.count()):
+            list.append(self.filterWordList.item(i).text())
+        conf.addoption(filmName,'filterword',conf.split(list))
+
+    #临时配置删除
+    def tempDelete(self):
+        conf = config()
+        for tempfilmName in self.tempfilmNames:
+            conf.delSection(tempfilmName)
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
@@ -204,19 +265,29 @@ class MyFilmWindow(QDialog, Ui_FilmDialog):
     def getFilmName(self):
         return self.filmName.text()
 
-
-
 # 电影过滤词窗口
-class MyFilterindow(QDialog, Ui_FilterDialog):
+class MyFilterwindow(QDialog, Ui_FilterDialog):
     def __init__(self, parent=None):
-        super(MyFilterindow, self).__init__(parent)
+        super(MyFilterwindow, self).__init__(parent)
         self.setupUi(self)
+
+    def getFilter(self):
+        return self.filter.text()
+
+    def setFilter(self,filterWord):
+        return self.filter.setText(filterWord)
 
 # 群窗口
 class MyQunWindow(QDialog, Ui_QunDialog):
     def __init__(self, parent=None):
         super(MyQunWindow, self).__init__(parent)
         self.setupUi(self)
+
+    def getQunName(self):
+        return self.qunName.text()
+
+    def setQunName(self,QunName):
+        return self.qunName.setText(QunName)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
