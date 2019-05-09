@@ -5,6 +5,7 @@
 # Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
+__author__ = 'Jaywatson'
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -43,6 +44,6 @@ class Ui_introDialog(object):
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "使用说明"))
-        self.label.setText(_translate("Dialog", "<html><head/><body><p>使用说明</p><p>1.自动回复:根据设置中的群名以及关键词选择回复</p><p>2.防剧透助手:设置剧名以及剧情关键词，自动过滤剧透</p><p>3.防撤回工具:开启后，被撤回的消息在文件传输助手中显示</p><p>4.定时设定:定时自动回复</p><p>5.解释权归公众号:二爷的私人助手所有</p></body></html>"))
+        self.label.setText(_translate("Dialog", "<html><head/><body><p>使用说明</p><p>1.自动回复:根据设置中的群名以及关键词选择回复</p><p>2.防剧透助手:设置剧名以及剧情关键词，自动过滤剧透</p><p>3.防撤回工具:开启后，被撤回的消息在文件传输助手中显示</p><p>4.定时设定:定时自动发送消息</p><p>5.解释权归公众号:二爷的私人助手所有</p></body></html>"))
         self.pushButton.setText(_translate("Dialog", "关闭"))
 

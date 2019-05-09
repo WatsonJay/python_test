@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'add_qun.ui'
+# Form implementation generated from reading ui file 'add_filter.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
+__author__ = 'Jaywatson'
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_QunDialog(object):
+class Ui_FilterDialog(object):
     def setupUi(self, Dialog):
         Dialog.setObjectName("Dialog")
-        Dialog.resize(259, 70)
+        Dialog.resize(261, 70)
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(Dialog)
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -25,9 +26,9 @@ class Ui_QunDialog(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.horizontalLayout.addWidget(self.label)
-        self.qunName = QtWidgets.QLineEdit(Dialog)
-        self.qunName.setObjectName("qunName")
-        self.horizontalLayout.addWidget(self.qunName)
+        self.filter = QtWidgets.QLineEdit(Dialog)
+        self.filter.setObjectName("filter")
+        self.horizontalLayout.addWidget(self.filter)
         self.horizontalLayout_2.addLayout(self.horizontalLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(Dialog)
         font = QtGui.QFont()
@@ -48,6 +49,6 @@ class Ui_QunDialog(object):
 
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
-        Dialog.setWindowTitle(_translate("Dialog", "Dialog"))
-        self.label.setText(_translate("Dialog", "群名："))
+        Dialog.setWindowTitle(_translate("Dialog", "过滤词"))
+        self.label.setText(_translate("Dialog", "过滤词："))
 

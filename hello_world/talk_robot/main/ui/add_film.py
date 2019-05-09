@@ -5,6 +5,7 @@
 # Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
+__author__ = 'Jaywatson'
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
