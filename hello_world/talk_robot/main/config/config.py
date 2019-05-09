@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+__author__ = 'Jaywatson'
+
 import configparser
 
 class config:
