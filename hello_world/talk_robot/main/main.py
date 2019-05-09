@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import csv
 import sys
+import csv
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QTableWidgetItem
 from hello_world.talk_robot.main.gui import Ui_MainWindow
@@ -63,15 +63,25 @@ class MySettingWindow(QDialog, Ui_settingDialog):
 
     # 读取csv配置文件
     def loadCsv(self, fileName):
-        with open(fileName, "r" , encoding='utf-8') as fileInput:
+        with open(fileName, "r", encoding='utf-8') as fileInput:
             reader = csv.reader(fileInput)
             for i, row in enumerate(reader):
                 if i == 0:
                     continue
                 rowPosition = self.tableWidget.rowCount()
                 self.tableWidget.insertRow(rowPosition)
-                for j in  range(len(row)):
+                for j in range(len(row)):
                     self.tableWidget.setItem(rowPosition, j, QTableWidgetItem(row[j]))
+
+    # 写入csv
+    def writeCsv(self, fileName):
+        with open(fileName, "w", encoding='utf-8', newline='') as csvfile:
+            writer = csv.writer(csvfile)  # 先写入columns_name
+            writer.writerow(["关键词", "回复"])
+            for index in range(self.tableWidget.rowCount()):
+                keyword = self.tableWidget.item(index, 0).text()
+                reply = self.tableWidget.item(index, 1).text()
+                writer.writerow([keyword, reply])
 
     # 加载配置文件
     def loadConfig(self):
@@ -249,7 +259,7 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         if self.qunWindow.exec_():
             # 数据插入表格
             qunName = self.qunWindow.getQunName()
-            self.qunName.takeItem(index)
+            self.qunNameList.takeItem(index)
             self.qunNameList.addItem(qunName)
         self.qunWindow.destroy()
 
@@ -270,15 +280,6 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         for i in range(self.qunNameList.count()):
             list.append(self.qunNameList.item(i).text())
         conf.addoption('qun', 'name', conf.split(list))
-
-    def writeCsv(self, fileName):
-        with open(fileName, "w", encoding='utf-8', newline ='') as csvfile:
-            writer = csv.writer(csvfile)  # 先写入columns_name
-            writer.writerow(["关键词","回复"])
-            for index in range(self.tableWidget.rowCount()):
-                keyword = self.tableWidget.item(index, 0).text()
-                reply = self.tableWidget.item(index, 1).text()
-                writer.writerow([keyword, reply])
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
