@@ -1,15 +1,17 @@
 # -*- coding: utf-8 -*-
+__author__ = 'Jaywatson'
+
 import sys
 import csv
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QTableWidgetItem
-from hello_world.talk_robot.main.gui import Ui_MainWindow
-from hello_world.talk_robot.main.setting import Ui_settingDialog
-from hello_world.talk_robot.main.intro import Ui_introDialog
-from hello_world.talk_robot.main.add_auto_word import Ui_WordDialog
-from hello_world.talk_robot.main.add_film import Ui_FilmDialog
-from hello_world.talk_robot.main.add_filter import Ui_FilterDialog
-from hello_world.talk_robot.main.add_qun import Ui_QunDialog
+from hello_world.talk_robot.main.ui.gui import Ui_MainWindow
+from hello_world.talk_robot.main.ui.setting import Ui_settingDialog
+from hello_world.talk_robot.main.ui.intro import Ui_introDialog
+from hello_world.talk_robot.main.ui.add_auto_word import Ui_WordDialog
+from hello_world.talk_robot.main.ui.add_film import Ui_FilmDialog
+from hello_world.talk_robot.main.ui.add_filter import Ui_FilterDialog
+from hello_world.talk_robot.main.ui.add_qun import Ui_QunDialog
 from hello_world.talk_robot.main.config.config import config
 
 #主页面
