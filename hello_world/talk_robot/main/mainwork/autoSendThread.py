@@ -10,6 +10,8 @@ class autoSend(QThread):
 
     def __init__(self, parent=None):
         super(autoSend, self).__init__(parent)
+        self.sleepTime = 10
+        self.message = 'happy'
 
     def run(self):
         # 创建BuckUp文件夹
@@ -24,10 +26,11 @@ class autoSend(QThread):
 
         try:
             for i in range(200000):
-                itchat.send(msg='test2', toUserName='filehelper')
-                self.getMsgSignal.emit("发送成功")
-                sleep(4)
+                itchat.send(msg= self.message, toUserName='filehelper')
+                self.getMsgSignal.emit(self.message + "发送成功,间隔"+ str(self.sleepTime) + "s")
+                sleep(self.sleepTime)
         except Exception as e:
             pass
 
-
+    def setTime(self,time):
+        self.sleepTime = time
