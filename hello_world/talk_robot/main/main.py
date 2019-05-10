@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
 
+from PyQt5.QtCore import pyqtSignal
+
 __author__ = 'Jaywatson'
 
 import sys
@@ -14,12 +16,13 @@ from hello_world.talk_robot.main.ui.add_auto_word import Ui_WordDialog
 from hello_world.talk_robot.main.ui.add_film import Ui_FilmDialog
 from hello_world.talk_robot.main.ui.add_filter import Ui_FilterDialog
 from hello_world.talk_robot.main.ui.add_qun import Ui_QunDialog
+from hello_world.talk_robot.main.ui.auto_send_setting import Ui_auto_send_Dialog
 from hello_world.talk_robot.main.config.config import config
 
 #主页面
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     autoSendSign = 0
-
+    time = pyqtSignal()  # 提前申明
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -49,6 +52,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         msg = "["+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+"]"+msg
         self.infomation_area.append(msg)
 
+    #自动发送子线程创建与毁灭
     def autoSend(self):
         try:
             from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
@@ -56,16 +60,38 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.auto_send.setText('停止自动发送')
                 self.autoSendSign = 1
                 self.autoSendThread = autoSend()
+                self.time.connect(lambda:self.autoSendThread.setTime(20))
+                self.time.emit()
                 self.autoSendThread.getMsgSignal.connect(self.showMessage)
                 self.autoSendThread.start()
             else:
                 self.auto_send.setText('定时发送设定')
                 self.autoSendSign = 0
+                self.autoSendThread.terminate()
+                del self.autoSendThread
         except Exception as e:
             pass
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
+
+# 自动发送设置窗口
+class MyAutoSendWindow(QDialog, Ui_auto_send_Dialog):
+    def __init__(self, parent=None):
+        super(MyAutoSendWindow, self).__init__(parent)
+        self.setupUi(self)
+
+    def getTime(self):
+        return self.timeBox.text()
+
+    def getSendWords(self):
+        return self.sendWords.toPlainText()
+
+    def setTime(self, time):
+        return self.timeBox.setText(time)
+
+    def setSendWords(self, sendword):
+        return self.sendWords.setText(sendword)
 
 # 设置窗口
 class MySettingWindow(QDialog, Ui_settingDialog):
