@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import os
 
 from PyQt5.QtCore import QThread,pyqtSignal
@@ -19,7 +20,3 @@ class autoReplyThread(QThread):
     # 启动itchat()
     itchat.auto_login(hotReload=True)
     itchat.run()
-
-# 创建一个新的线程
-thread = autoReplyThread()
-thread.start()
