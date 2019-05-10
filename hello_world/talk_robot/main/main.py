@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import time
+
 __author__ = 'Jaywatson'
 
 import sys
@@ -16,11 +18,14 @@ from hello_world.talk_robot.main.config.config import config
 
 #主页面
 class MyMainWindow(QMainWindow, Ui_MainWindow):
+    autoSendSign = 0
+
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.actionsetting.triggered.connect(self.settingShow)
         self.introduction.clicked.connect(self.infoShow)
+        self.auto_send.clicked.connect(self.autoSend)
 
     # 打开设置窗口
     def settingShow(self):
@@ -38,6 +43,26 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.introWindow = MyIntroWindow()
         self.introWindow.exec_()
         self.introWindow.destroy()
+
+    #显示日志
+    def showMessage(self, msg):
+        msg = "["+time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())+"]"+msg
+        self.infomation_area.append(msg)
+
+    def autoSend(self):
+        try:
+            from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
+            if self.autoSendSign == 0:
+                self.auto_send.setText('停止自动发送')
+                self.autoSendSign = 1
+                self.autoSendThread = autoSend()
+                self.autoSendThread.getMsgSignal.connect(self.showMessage)
+                self.autoSendThread.start()
+            else:
+                self.auto_send.setText('定时发送设定')
+                self.autoSendSign = 0
+        except Exception as e:
+            pass
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
