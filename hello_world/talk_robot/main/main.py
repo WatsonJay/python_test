@@ -23,6 +23,7 @@ from hello_world.talk_robot.main.config.config import config
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     autoSendSign = 0
     time = pyqtSignal()  # 提前申明
+    sendWords = pyqtSignal()
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -55,20 +56,29 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     #自动发送子线程创建与毁灭
     def autoSend(self):
         try:
-            from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
-            if self.autoSendSign == 0:
-                self.auto_send.setText('停止自动发送')
-                self.autoSendSign = 1
-                self.autoSendThread = autoSend()
-                self.time.connect(lambda:self.autoSendThread.setTime(20))
-                self.time.emit()
-                self.autoSendThread.getMsgSignal.connect(self.showMessage)
-                self.autoSendThread.start()
-            else:
-                self.auto_send.setText('定时发送设定')
-                self.autoSendSign = 0
-                self.autoSendThread.terminate()
-                del self.autoSendThread
+            self.AutoSendWindow = MyAutoSendWindow()
+            if self.AutoSendWindow.exec_():
+                # 数据插入表格
+                time = int(self.AutoSendWindow.getTime())
+                sendWords = self.AutoSendWindow.getSendWords()
+                from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
+                if self.autoSendSign == 0:
+                    self.auto_send.setText('停止自动发送')
+                    self.autoSendSign = 1
+                    self.autoSendThread = autoSend()
+                    self.time.connect(lambda: self.autoSendThread.setTime(time))#通过信号槽设置时间
+                    self.time.emit()
+                    self.sendWords.connect(lambda: self.autoSendThread.setSendWords(sendWords))#通过信号槽设置发送词
+                    self.sendWords.emit()
+                    self.autoSendThread.getMsgSignal.connect(self.showMessage)
+                    self.autoSendThread.start()
+                else:
+                    self.auto_send.setText('定时发送设定')
+                    self.autoSendSign = 0
+                    self.autoSendThread.terminate()
+                    del self.autoSendThread
+            self.AutoSendWindow.destroy()
+
         except Exception as e:
             pass
 

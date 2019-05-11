@@ -34,3 +34,6 @@ class autoSend(QThread):
 
     def setTime(self,time):
         self.sleepTime = time
+
+    def setSendWords(self,sendWords):
+        self.message = sendWords
