@@ -56,13 +56,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     #自动发送子线程创建与毁灭
     def autoSend(self):
         try:
-            self.AutoSendWindow = MyAutoSendWindow()
-            if self.AutoSendWindow.exec_():
-                # 数据插入表格
-                time = int(self.AutoSendWindow.getTime())
-                sendWords = self.AutoSendWindow.getSendWords()
-                from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
-                if self.autoSendSign == 0:
+            from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
+            if self.autoSendSign == 0:
+                self.AutoSendWindow = MyAutoSendWindow()
+                if self.AutoSendWindow.exec_():
+                    # 数据插入表格
+                    time = int(self.AutoSendWindow.getTime())
+                    sendWords = self.AutoSendWindow.getSendWords()
                     self.auto_send.setText('停止自动发送')
                     self.autoSendSign = 1
                     self.autoSendThread = autoSend()
@@ -72,11 +72,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     self.sendWords.emit()
                     self.autoSendThread.getMsgSignal.connect(self.showMessage)
                     self.autoSendThread.start()
-                else:
-                    self.auto_send.setText('定时发送设定')
-                    self.autoSendSign = 0
-                    self.autoSendThread.terminate()
-                    del self.autoSendThread
+            else:
+                self.auto_send.setText('定时发送设定')
+                self.autoSendSign = 0
+                self.autoSendThread.terminate()
+                del self.autoSendThread
             self.AutoSendWindow.destroy()
 
         except Exception as e:
