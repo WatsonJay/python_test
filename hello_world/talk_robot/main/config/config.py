@@ -2,8 +2,13 @@
 __author__ = 'Jaywatson'
 
 import configparser
+from Crypto.Cipher import AES
+from binascii import b2a_hex, a2b_hex
 
 class config:
+    def __init__(self, key=')_9-+klo@c4t$k$w'):
+        self.key = key.encode('utf-8')
+        self.mode = AES.MODE_CBC
 
     # 读取配置文件
     def readConfig(self):
@@ -50,6 +55,8 @@ class config:
         word = config.sections()
         if 'qun' in word:
             word.remove('qun')
+        if 'turing' in word:
+            word.remove('turing')
         return word
 
 
@@ -68,3 +75,25 @@ class config:
         else:
             word = ''
         return word
+
+    #aes加密
+    def encrypt(self,text):
+        try:
+            cryptor = AES.new(self.key,self.mode,self.key)
+            length = 16
+            count = len(text)
+            if count < length:
+                add = (length - count)
+            elif count > length:
+                add = (length - (count % length))
+            text_new = (text + ('\0' * add)).encode('utf-8')
+            self.ciphertext = cryptor.encrypt(text_new)
+            return bytes.decode(b2a_hex(self.ciphertext), encoding='utf8')
+        except Exception:
+            return ''
+
+    # aes解密
+    def decrypt(self,text):
+        cryptor = AES.new(self.key, self.mode, self.key)
+        plain_text = bytes.decode(cryptor.decrypt(a2b_hex(bytes(text, encoding='utf8'))), encoding='utf8')
+        return plain_text.rstrip('\0')
