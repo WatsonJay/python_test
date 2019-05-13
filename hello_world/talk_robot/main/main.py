@@ -8,6 +8,7 @@ __author__ = 'Jaywatson'
 import sys
 import csv
 
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QTableWidgetItem
 from hello_world.talk_robot.main.ui.gui import Ui_MainWindow
 from hello_world.talk_robot.main.ui.setting import Ui_settingDialog
@@ -158,8 +159,12 @@ class MySettingWindow(QDialog, Ui_settingDialog):
             for filmName in filmNames:
                 if filmName != '':
                     self.filmNameBox.addItem(filmName)
+            apiKey = conf.getOption("turing", "apikey")
+            apipass = conf.decrypt(conf.getOption("turing", "apiPass"))
+            self.apiKeyEdit.setText(apiKey)
+            self.apiPassEdit.setText(apipass)
         except Exception as e:
-            pass
+            self.Tips("系统异常，请重试")
 
     # 加载过滤词
     def loadFilter(self):
@@ -336,13 +341,17 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         else:
             return
 
-    # 临时保存
+    # 保存配置文件
     def Save(self):
         list = []
         conf = config()
         for i in range(self.qunNameList.count()):
             list.append(self.qunNameList.item(i).text())
         conf.addoption('qun', 'name', conf.split(list))
+        apikey = self.apiKeyEdit.text()
+        conf.addoption('turing', 'apikey', apikey)
+        apiPass = self.apiPassEdit.text()
+        conf.addoption('turing', 'apiPass', conf.encrypt(apiPass))
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
