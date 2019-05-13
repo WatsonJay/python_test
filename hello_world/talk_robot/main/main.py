@@ -23,6 +23,7 @@ from hello_world.talk_robot.main.config.config import config
 #主页面
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     autoSendSign = 0
+    goBackSign = 0
     time = pyqtSignal()  # 提前申明
     sendWords = pyqtSignal()
     def __init__(self, parent=None):
@@ -31,6 +32,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.actionsetting.triggered.connect(self.settingShow)
         self.introduction.clicked.connect(self.infoShow)
         self.auto_send.clicked.connect(self.autoSend)
+        self.message_back.clicked.connect(self.goBack)
 
     # 打开设置窗口
     def settingShow(self):
@@ -80,6 +82,24 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 del self.autoSendThread
             self.AutoSendWindow.destroy()
 
+        except Exception as e:
+            pass
+
+    # 防撤回子线程创建与毁灭
+    def goBack(self):
+        try:
+            from hello_world.talk_robot.main.mainwork.goBackCatchThread import goBackCatch
+            if self.goBackSign == 0:
+                self.goBackSign = 1
+                self.message_back.setText('关闭防撤回工具')
+                self.goBackCatchThread = goBackCatch()
+                self.goBackCatchThread.getMsgSignal.connect(self.showMessage)
+                self.goBackCatchThread.start()
+            else:
+                self.goBackSign = 0
+                self.message_back.setText('开启防撤回工具')
+                self.goBackCatchThread.terminate()
+                del self.goBackCatchThread
         except Exception as e:
             pass
 
