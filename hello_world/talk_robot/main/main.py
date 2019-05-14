@@ -24,6 +24,7 @@ from hello_world.talk_robot.main.config.config import config
 class MyMainWindow(QMainWindow, Ui_MainWindow):
     autoSendSign = 0
     goBackSign = 0
+    filmFilterSign = 0
     time = pyqtSignal()  # 提前申明
     sendWords = pyqtSignal()
     def __init__(self, parent=None):
@@ -98,6 +99,24 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             else:
                 self.goBackSign = 0
                 self.message_back.setText('开启防撤回工具')
+                self.goBackCatchThread.terminate()
+                del self.goBackCatchThread
+        except Exception as e:
+            pass
+
+    # 电影防剧透子线程创建与毁灭
+    def filmFilter(self):
+        try:
+            from hello_world.talk_robot.main.mainwork.filmFilterThread import filmFilter
+            if self.filmFilterSign == 0:
+                self.filmFilterSign = 1
+                self.film_filter.setText('关闭防剧透助手')
+                self.filmFilterThread = filmFilter()
+                self.filmFilterThread.getMsgSignal.connect(self.showMessage)
+                self.filmFilterThread.start()
+            else:
+                self.filmFilterSign = 0
+                self.film_filter.setText('开启防剧透助手')
                 self.goBackCatchThread.terminate()
                 del self.goBackCatchThread
         except Exception as e:
@@ -320,7 +339,9 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         list = []
         conf = config()
         for i in range(self.filterWordList.count()):
-            list.append(self.filterWordList.item(i).text())
+            text=self.filterWordList.item(i).text()
+            if text != '':
+                list.append(text)
         conf.addoption(filmName,'filterword',conf.split(list))
 
     #临时配置删除
