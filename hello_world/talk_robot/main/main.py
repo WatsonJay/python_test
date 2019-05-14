@@ -34,6 +34,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.introduction.clicked.connect(self.infoShow)
         self.auto_send.clicked.connect(self.autoSend)
         self.message_back.clicked.connect(self.goBack)
+        self.film_filter.clicked.connect(self.filmFilter)
 
     # 打开设置窗口
     def settingShow(self):
@@ -60,28 +61,34 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     #自动发送子线程创建与毁灭
     def autoSend(self):
         try:
-            from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
-            if self.autoSendSign == 0:
-                self.AutoSendWindow = MyAutoSendWindow()
-                if self.AutoSendWindow.exec_():
-                    # 数据插入表格
-                    time = int(self.AutoSendWindow.getTime())
-                    sendWords = self.AutoSendWindow.getSendWords()
-                    self.auto_send.setText('停止自动发送')
-                    self.autoSendSign = 1
-                    self.autoSendThread = autoSend()
-                    self.time.connect(lambda: self.autoSendThread.setTime(time))#通过信号槽设置时间
-                    self.time.emit()
-                    self.sendWords.connect(lambda: self.autoSendThread.setSendWords(sendWords))#通过信号槽设置发送词
-                    self.sendWords.emit()
-                    self.autoSendThread.getMsgSignal.connect(self.showMessage)
-                    self.autoSendThread.start()
+            if self.goBackSign == 0 and self.filmFilterSign == 0:
+                from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
+                if self.autoSendSign == 0:
+                    self.AutoSendWindow = MyAutoSendWindow()
+                    if self.AutoSendWindow.exec_():
+                        # 数据插入表格
+                        time = int(self.AutoSendWindow.getTime())
+                        sendWords = self.AutoSendWindow.getSendWords()
+                        self.infomation_area.clear()
+                        self.auto_send.setText('停止自动发送')
+                        self.showMessage("自动发送助手已启动")
+                        self.autoSendSign = 1
+                        self.autoSendThread = autoSend()
+                        self.time.connect(lambda: self.autoSendThread.setTime(time))#通过信号槽设置时间
+                        self.time.emit()
+                        self.sendWords.connect(lambda: self.autoSendThread.setSendWords(sendWords))#通过信号槽设置发送词
+                        self.sendWords.emit()
+                        self.autoSendThread.getMsgSignal.connect(self.showMessage)
+                        self.autoSendThread.start()
+                else:
+                    self.auto_send.setText('定时发送设定')
+                    self.showMessage("自动发送助手已终止")
+                    self.autoSendSign = 0
+                    self.autoSendThread.terminate()
+                    del self.autoSendThread
+                self.AutoSendWindow.destroy()
             else:
-                self.auto_send.setText('定时发送设定')
-                self.autoSendSign = 0
-                self.autoSendThread.terminate()
-                del self.autoSendThread
-            self.AutoSendWindow.destroy()
+                self.Tips('请关闭其他功能')
 
         except Exception as e:
             pass
@@ -89,36 +96,48 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     # 防撤回子线程创建与毁灭
     def goBack(self):
         try:
-            from hello_world.talk_robot.main.mainwork.goBackCatchThread import goBackCatch
-            if self.goBackSign == 0:
-                self.goBackSign = 1
-                self.message_back.setText('关闭防撤回工具')
-                self.goBackCatchThread = goBackCatch()
-                self.goBackCatchThread.getMsgSignal.connect(self.showMessage)
-                self.goBackCatchThread.start()
+            if self.autoSendSign == 0 and self.filmFilterSign == 0:
+                from hello_world.talk_robot.main.mainwork.goBackCatchThread import goBackCatch
+                if self.goBackSign == 0:
+                    self.goBackSign = 1
+                    self.message_back.setText('关闭防撤回工具')
+                    self.infomation_area.clear()
+                    self.showMessage("防撤回助手已启动")
+                    self.goBackCatchThread = goBackCatch()
+                    self.goBackCatchThread.getMsgSignal.connect(self.showMessage)
+                    self.goBackCatchThread.start()
+                else:
+                    self.goBackSign = 0
+                    self.message_back.setText('开启防撤回工具')
+                    self.showMessage("防撤回助手已终止")
+                    self.goBackCatchThread.terminate()
+                    del self.goBackCatchThread
             else:
-                self.goBackSign = 0
-                self.message_back.setText('开启防撤回工具')
-                self.goBackCatchThread.terminate()
-                del self.goBackCatchThread
+                self.Tips('请关闭其他功能')
         except Exception as e:
             pass
 
     # 电影防剧透子线程创建与毁灭
     def filmFilter(self):
         try:
-            from hello_world.talk_robot.main.mainwork.filmFilterThread import filmFilter
-            if self.filmFilterSign == 0:
-                self.filmFilterSign = 1
-                self.film_filter.setText('关闭防剧透助手')
-                self.filmFilterThread = filmFilter()
-                self.filmFilterThread.getMsgSignal.connect(self.showMessage)
-                self.filmFilterThread.start()
+            if self.autoSendSign == 0 and self.goBackSign == 0:
+                from hello_world.talk_robot.main.mainwork.filmFilterThread import filmFilter
+                if self.filmFilterSign == 0:
+                    self.filmFilterSign = 1
+                    self.film_filter.setText('关闭防剧透助手')
+                    self.infomation_area.clear()
+                    self.showMessage("防剧透助手已启动")
+                    self.filmFilterThread = filmFilter()
+                    self.filmFilterThread.getMsgSignal.connect(self.showMessage)
+                    self.filmFilterThread.start()
+                else:
+                    self.filmFilterSign = 0
+                    self.film_filter.setText('开启防剧透助手')
+                    self.showMessage("防剧透助手已终止")
+                    self.filmFilterThread.terminate()
+                    del self.filmFilterThread
             else:
-                self.filmFilterSign = 0
-                self.film_filter.setText('开启防剧透助手')
-                self.goBackCatchThread.terminate()
-                del self.goBackCatchThread
+                self.Tips('请关闭其他功能')
         except Exception as e:
             pass
 
@@ -199,8 +218,13 @@ class MySettingWindow(QDialog, Ui_settingDialog):
                 if filmName != '':
                     self.filmNameBox.addItem(filmName)
             apiKey = conf.getOption("turing", "apikey")
-            apipass = conf.decrypt(conf.getOption("turing", "apiPass"))
             self.apiKeyEdit.setText(apiKey)
+            enable = conf.getOption("turing", "enable")
+            if enable == 'False':
+                self.replace_close.setChecked(True)
+            else:
+                self.replace_open.setChecked(True)
+            apipass = conf.decrypt(conf.getOption("turing", "apiPass"))
             self.apiPassEdit.setText(apipass)
         except Exception as e:
             self.Tips("系统异常，请重试")
@@ -393,6 +417,10 @@ class MySettingWindow(QDialog, Ui_settingDialog):
         conf.addoption('turing', 'apikey', apikey)
         apiPass = self.apiPassEdit.text()
         conf.addoption('turing', 'apiPass', conf.encrypt(apiPass))
+        if self.replace_close.isChecked():
+            conf.addoption('turing', 'enable', 'False')
+        if self.replace_open.isChecked():
+            conf.addoption('turing', 'enable', 'True')
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
