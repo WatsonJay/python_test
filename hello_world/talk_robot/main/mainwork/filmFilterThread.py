@@ -13,26 +13,30 @@ from itchat.content import *
 
 class filmFilter(QThread):
     getMsgSignal = pyqtSignal(str)
+    WARNING_KEYWORDS = []
+    WARNING_REPLY = ''
 
     def __init__(self):
-        getMsgSignal = pyqtSignal(str)
         super().__init__()
-        WARNING_KEYWORDS = []
-        WARNING_REPLY = ''
 
     def run(self):
 
         @itchat.msg_register([TEXT, PICTURE, FRIENDS, CARD, MAP, SHARING, RECORDING, ATTACHMENT, VIDEO, NOTE],
                              isFriendChat=True, isGroupChat=True, isMpChat=True)
         def text_replay(msg):
+            config_get = config()
+            groups_selects = config_get.splitword(config_get.getOption('qun', 'name'))
             if 'ActualNickName' in msg:
                 msg_from_nickname = msg['ActualNickName']
                 groups = itchat.get_chatrooms(update=True)
                 for group in groups:
-                    if msg['FromUserName'] == group['UserName'] and group['NickName'] == '谁是谁的谁':
-                        if check_msg(msg.text):
+                    if msg['FromUserName'] == group['UserName'] and group['NickName'] in groups_selects:
+                        filmName, type = self.check_msg(msg.text)
+                        if type:
                             self.getMsgSignal.emit('WARNING! 消息涉嫌剧透,现已自动屏蔽 FROM：{}'.format(group['NickName'] + '的' + msg_from_nickname))
-                            # return WARNING_REPLY
+                            return self.setfilmName(filmName)
+
+
 
         # 创建BuckUp文件夹
         if not os.path.exists(".\\BackUp\\"):
@@ -41,16 +45,16 @@ class filmFilter(QThread):
         itchat.auto_login(hotReload=True)
         itchat.run()
 
-        # 检测是否存在过滤关键词
-        def check_msg(msg):
-            keyword_list = jieba.cut(msg)
-            for word in keyword_list:
-                dict = filmFilter.filmDictBuild()
-                for filmName, value in a.items():
-                if word in self.WARNING_KEYWORDS:
+    # 检测是否存在过滤关键词
+    def check_msg(self,msg):
+        keyword_list = jieba.cut(msg)
+        for word in keyword_list:
+            dict = filmFilter.filmDictBuild()
+            for filmName, value in dict.items():
+                if word in value:
+                    return filmName, True
+        return filmName, False
 
-                    return True
-            return False
 
     @staticmethod
     def filmDictBuild():
@@ -62,5 +66,7 @@ class filmFilter(QThread):
             dict.update({filmName: filterWords})
         return dict
 
-    def setfilmName(self,filmName):
-        self.WARNING_REPLY = '我觉得你在搞{}的剧透，我就清个屏!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n'.format(filmName)
+    @staticmethod
+    def setfilmName(filmName):
+        WARNING_REPLY = "我觉得你在搞{}的剧透，我就清个屏!!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n ".format(filmName)
+        return WARNING_REPLY
