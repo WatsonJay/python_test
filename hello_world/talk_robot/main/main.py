@@ -25,8 +25,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     autoSendSign = 0
     goBackSign = 0
     filmFilterSign = 0
+    autoReplySign = 0
     time = pyqtSignal()  # 提前申明
     sendWords = pyqtSignal()
+    sendKeys = pyqtSignal()
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
@@ -35,7 +37,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.auto_send.clicked.connect(self.autoSend)
         self.message_back.clicked.connect(self.goBack)
         self.film_filter.clicked.connect(self.filmFilter)
-
+        self.auto_reply.clicked.connect(self.autoReply)
     # 打开设置窗口
     def settingShow(self):
         self.settingWindow = MySettingWindow()
@@ -61,7 +63,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     #自动发送子线程创建与毁灭
     def autoSend(self):
         try:
-            if self.goBackSign == 0 and self.filmFilterSign == 0:
+            if self.goBackSign == 0 and self.filmFilterSign == 0 and self.autoReplySign == 0:
                 from hello_world.talk_robot.main.mainwork.autoSendThread import autoSend
                 if self.autoSendSign == 0:
                     self.AutoSendWindow = MyAutoSendWindow()
@@ -96,7 +98,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     # 防撤回子线程创建与毁灭
     def goBack(self):
         try:
-            if self.autoSendSign == 0 and self.filmFilterSign == 0:
+            if self.autoSendSign == 0 and self.filmFilterSign == 0 and self.autoReplySign == 0:
                 from hello_world.talk_robot.main.mainwork.goBackCatchThread import goBackCatch
                 if self.goBackSign == 0:
                     self.goBackSign = 1
@@ -120,7 +122,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
     # 电影防剧透子线程创建与毁灭
     def filmFilter(self):
         try:
-            if self.autoSendSign == 0 and self.goBackSign == 0:
+            if self.autoSendSign == 0 and self.goBackSign == 0 and self.autoReplySign == 0:
                 from hello_world.talk_robot.main.mainwork.filmFilterThread import filmFilter
                 if self.filmFilterSign == 0:
                     self.filmFilterSign = 1
@@ -141,6 +143,43 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             pass
 
+    # 自动回复子线程创建与毁灭
+    def autoReply(self):
+        try:
+            if self.autoSendSign == 0 and self.filmFilterSign == 0 and self.goBackSign == 0:
+                from hello_world.talk_robot.main.mainwork.autoReplyThread import autoReplyThread
+                if self.autoReplySign == 0:
+                    self.autoReplySign = 1
+                    self.auto_reply.setText('关闭自动回复')
+                    self.infomation_area.clear()
+                    self.showMessage("自动回复已启动")
+                    dict =self.loadCsv("config/keyword.csv")
+                    self.autoReplyThread = autoReplyThread()
+                    self.autoReplyThread.getMsgSignal.connect(self.showMessage)
+                    self.sendKeys.connect(lambda: self.autoReplyThread.setDict(dict))  # 通过信号槽设置发送回复关键词
+                    self.sendKeys.emit()
+                    self.autoReplyThread.start()
+                else:
+                    self.autoReplySign = 0
+                    self.auto_reply.setText('开启自动回复')
+                    self.showMessage("自动回复已终止")
+                    self.autoReplyThread.terminate()
+                    del self.autoReplyThread
+            else:
+                self.Tips('请关闭其他功能')
+        except Exception as e:
+            pass
+
+    # 读取csv配置文件
+    def loadCsv(self, fileName):
+        dict = {}
+        with open(fileName, "r", encoding='utf-8') as fileInput:
+            reader = csv.reader(fileInput)
+            for i, row in enumerate(reader):
+                if i == 0:
+                    continue
+                dict.update({row[0]: row[1]})
+        return dict
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
