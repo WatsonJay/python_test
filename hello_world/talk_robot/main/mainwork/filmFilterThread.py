@@ -4,12 +4,10 @@ import itchat
 import jieba
 from PyQt5.QtCore import QThread,pyqtSignal
 from hello_world.talk_robot.main.config.config import config
-
+from itchat.content import *
 
 MSGINFO = {}
 FACEPACKAGE = None
-
-from itchat.content import *
 
 class filmFilter(QThread):
     getMsgSignal = pyqtSignal(str)
