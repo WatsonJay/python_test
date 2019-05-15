@@ -16,7 +16,7 @@ class autoReplyThread(QThread):
 
     def run(self):
 
-        @itchat.msg_register(TEXT, isGroupChat=True)
+        @itchat.msg_register([TEXT], isFriendChat=True, isGroupChat=True, isMpChat=True)
         def group_text(msg):
             msg_content = None
             if msg.isAt:
