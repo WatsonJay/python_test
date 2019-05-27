@@ -33,7 +33,24 @@
        <widget class="QListWidget" name="listWidget"/>
       </item>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout"/>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <widget class="QTabWidget" name="tabWidget">
+          <property name="font">
+           <font>
+            <family>微软雅黑</family>
+            <pointsize>8</pointsize>
+           </font>
+          </property>
+          <property name="currentIndex">
+           <number>-1</number>
+          </property>
+          <property name="tabsClosable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </item>
@@ -52,6 +69,7 @@
     <property name="title">
      <string>设置</string>
     </property>
+    <addaction name="actionsetting"/>
     <addaction name="actionabout"/>
    </widget>
    <addaction name="menu"/>
@@ -60,6 +78,11 @@
   <action name="actionabout">
    <property name="text">
     <string>about</string>
+   </property>
+  </action>
+  <action name="actionsetting">
+   <property name="text">
+    <string>setting</string>
    </property>
   </action>
  </widget>
