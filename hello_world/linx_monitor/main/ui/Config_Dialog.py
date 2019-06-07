@@ -1,0 +1,93 @@
+# -*- coding: utf-8 -*-
+
+# Form implementation generated from reading ui file 'Config_Dialog.ui'
+#
+# Created by: PyQt5 UI code generator 5.11.2
+#
+# WARNING! All changes made in this file will be lost!
+
+from PyQt5 import QtCore, QtGui, QtWidgets
+
+class Ui_Config_Dialog(object):
+    def setupUi(self, Config_Dialog):
+        Config_Dialog.setObjectName("Config_Dialog")
+        Config_Dialog.resize(327, 130)
+        self.horizontalLayout = QtWidgets.QHBoxLayout(Config_Dialog)
+        self.horizontalLayout.setObjectName("horizontalLayout")
+        self.formLayout = QtWidgets.QFormLayout()
+        self.formLayout.setLabelAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
+        self.formLayout.setFormAlignment(QtCore.Qt.AlignCenter)
+        self.formLayout.setObjectName("formLayout")
+        self.label = QtWidgets.QLabel(Config_Dialog)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        self.label.setFont(font)
+        self.label.setTextFormat(QtCore.Qt.AutoText)
+        self.label.setScaledContents(False)
+        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setWordWrap(False)
+        self.label.setObjectName("label")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.label)
+        self.label_2 = QtWidgets.QLabel(Config_Dialog)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        self.label_2.setFont(font)
+        self.label_2.setTextFormat(QtCore.Qt.AutoText)
+        self.label_2.setScaledContents(False)
+        self.label_2.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_2.setWordWrap(False)
+        self.label_2.setObjectName("label_2")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
+        self.label_3 = QtWidgets.QLabel(Config_Dialog)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        self.label_3.setFont(font)
+        self.label_3.setTextFormat(QtCore.Qt.AutoText)
+        self.label_3.setScaledContents(False)
+        self.label_3.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_3.setWordWrap(False)
+        self.label_3.setObjectName("label_3")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.label_3)
+        self.lineEdit = QtWidgets.QLineEdit(Config_Dialog)
+        self.lineEdit.setObjectName("lineEdit")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.lineEdit)
+        self.lineEdit_2 = QtWidgets.QLineEdit(Config_Dialog)
+        self.lineEdit_2.setObjectName("lineEdit_2")
+        self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit_2)
+        self.lineEdit_3 = QtWidgets.QLineEdit(Config_Dialog)
+        self.lineEdit_3.setObjectName("lineEdit_3")
+        self.formLayout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.lineEdit_3)
+        self.lineEdit_4 = QtWidgets.QLineEdit(Config_Dialog)
+        self.lineEdit_4.setObjectName("lineEdit_4")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.lineEdit_4)
+        self.label_4 = QtWidgets.QLabel(Config_Dialog)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        self.label_4.setFont(font)
+        self.label_4.setTextFormat(QtCore.Qt.AutoText)
+        self.label_4.setScaledContents(False)
+        self.label_4.setAlignment(QtCore.Qt.AlignCenter)
+        self.label_4.setWordWrap(False)
+        self.label_4.setObjectName("label_4")
+        self.formLayout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.label_4)
+        self.horizontalLayout.addLayout(self.formLayout)
+        self.buttonBox = QtWidgets.QDialogButtonBox(Config_Dialog)
+        self.buttonBox.setMaximumSize(QtCore.QSize(50, 16777215))
+        self.buttonBox.setOrientation(QtCore.Qt.Vertical)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setObjectName("buttonBox")
+        self.horizontalLayout.addWidget(self.buttonBox)
+
+        self.retranslateUi(Config_Dialog)
+        self.buttonBox.accepted.connect(Config_Dialog.accept)
+        self.buttonBox.rejected.connect(Config_Dialog.reject)
+        QtCore.QMetaObject.connectSlotsByName(Config_Dialog)
+
+    def retranslateUi(self, Config_Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Config_Dialog.setWindowTitle(_translate("Config_Dialog", "服务器设置"))
+        self.label.setText(_translate("Config_Dialog", "服务器地址："))
+        self.label_2.setText(_translate("Config_Dialog", "ssh端口："))
+        self.label_3.setText(_translate("Config_Dialog", "用户名："))
+        self.label_4.setText(_translate("Config_Dialog", "密码："))
+
