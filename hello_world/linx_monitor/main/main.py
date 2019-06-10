@@ -1,6 +1,7 @@
 import sys
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox
+from PyQt5 import QtWidgets
 
 from hello_world.linx_monitor.main.config.config import config
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
@@ -14,6 +15,7 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         self.loadConfig()
         self.serverAdd.clicked.connect(self.serverAdd_Open)
         self.server_listWidget.itemDoubleClicked.connect(self.showWidget)
+        self.tabWidget.tabCloseRequested.connect(self.tabWidget.removeTab)
 
     def loadConfig(self):
         try:
@@ -34,16 +36,20 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         self.loadConfig()
 
     def showWidget(self):
-        conf = config()
-        self.serverConfigDialog = serverConfigDialog()
-        sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
-        info = conf.sentionAll(sention)
-        self.serverConfigDialog.setDict(info)
-        self.serverConfigDialog.disable()
-        if self.serverConfigDialog.exec_():
-            self.Tips("")
-        self.serverConfigDialog.destroy()
-
+        try:
+            conf = config()
+            self.serverConfigDialog = serverConfigDialog()
+            sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
+            info = conf.sentionAll(sention)
+            self.serverConfigDialog.setDict(info)
+            self.serverConfigDialog.disable()
+            if self.serverConfigDialog.exec_():
+                self.tab = QtWidgets.QWidget()
+                self.tabWidget.addTab(self.tab, sention)
+                self.tabWidget.setCurrentWidget(self.tab)
+            self.serverConfigDialog.destroy()
+        except Exception as e:
+            self.Tips("配置文件出现异常，请重置配置文件")
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
@@ -59,7 +65,7 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.ipEdit.setText(dict['ip'])
         self.portEdit.setText(dict['port'])
         self.userEdit.setText(dict['user'])
-        self.passwordEdit.setText(conf.decrypt(dict['userpassword']))
+        self.passwordEdit.setText(conf.decrypt(dict['password']))
 
     def getDict(self):
         conf = config()
@@ -72,6 +78,7 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         return info
 
     def disable(self):
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText('连接')
         self.nameEdit.setDisabled(True)
         self.ipEdit.setDisabled(True)
         self.portEdit.setDisabled(True)
