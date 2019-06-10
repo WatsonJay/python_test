@@ -1,0 +1,7 @@
+<RCC>
+  <qresource prefix="../">
+    <file>icon/cloud.png</file>
+    <file>icon/cloud-add.png</file>
+    <file>icon/cloud-remove.png</file>
+  </qresource>
+</RCC>
