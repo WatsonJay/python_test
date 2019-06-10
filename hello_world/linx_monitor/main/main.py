@@ -1,11 +1,12 @@
 import sys
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWidget
 from PyQt5 import QtWidgets
 
 from hello_world.linx_monitor.main.config.config import config
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
 from hello_world.linx_monitor.main.ui.MonitorWindow import Ui_Monitor_Window
+from hello_world.linx_monitor.main.ui.simple import Ui_simple_Form
 
 
 class MyMainWindow(QMainWindow, Ui_Monitor_Window):
@@ -14,6 +15,8 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         self.setupUi(self)
         self.loadConfig()
         self.serverAdd.clicked.connect(self.serverAdd_Open)
+        self.serverModif.clicked.connect(self.serverModif_Open)
+        self.serverDelete.clicked.connect(self.serverDel)
         self.server_listWidget.itemDoubleClicked.connect(self.showWidget)
         self.tabWidget.tabCloseRequested.connect(self.tabWidget.removeTab)
 
@@ -35,16 +38,44 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         self.serverConfigDialog.destroy()
         self.loadConfig()
 
+    def serverModif_Open(self):
+        conf = config()
+        self.serverConfigDialog = serverConfigDialog()
+        sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
+        info = conf.sentionAll(sention)
+        self.serverConfigDialog.setDict(info)
+        self.serverConfigDialog.disableName()
+        if self.serverConfigDialog.exec_():
+            infos = self.serverConfigDialog.getDict()
+            conf.cmdSection(infos['name'], infos)
+        self.serverConfigDialog.destroy()
+        self.loadConfig()
+
+    def serverDel(self):
+        conf = config()
+        sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
+        msg = QMessageBox.question(self, "删除警告", "你确定删除吗？", QMessageBox.Yes | QMessageBox.No,
+                                   QMessageBox.No)  # 这里是固定格式，yes/no不能动
+        # 判断消息的返回值
+        if msg == QMessageBox.Yes:
+            conf.delSection(sention)
+        else:
+            return
+        self.loadConfig()
+
+
     def showWidget(self):
         try:
             conf = config()
             self.serverConfigDialog = serverConfigDialog()
             sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
             info = conf.sentionAll(sention)
+            ip = info['ip']
             self.serverConfigDialog.setDict(info)
             self.serverConfigDialog.disable()
             if self.serverConfigDialog.exec_():
-                self.tab = QtWidgets.QWidget()
+                self.tab = simpleForm()
+                self.tab.setIp(ip)
                 self.tabWidget.addTab(self.tab, sention)
                 self.tabWidget.setCurrentWidget(self.tab)
             self.serverConfigDialog.destroy()
@@ -77,6 +108,9 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         info['password'] = conf.encrypt(self.nameEdit.text())
         return info
 
+    def disableName(self):
+        self.nameEdit.setDisabled(True)
+
     def disable(self):
         self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText('连接')
         self.nameEdit.setDisabled(True)
@@ -84,6 +118,14 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.portEdit.setDisabled(True)
         self.userEdit.setDisabled(True)
         self.passwordEdit.setDisabled(True)
+
+class simpleForm(QWidget,Ui_simple_Form):
+    def __init__(self):
+        super(simpleForm,self).__init__()
+        self.setupUi(self)
+
+    def setIp(self, ip):
+        self.ip_lineEdit.setText(ip)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
