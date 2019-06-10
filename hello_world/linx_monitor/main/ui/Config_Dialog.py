@@ -89,6 +89,8 @@ class Ui_Config_Dialog(object):
         self.buttonBox.setMaximumSize(QtCore.QSize(50, 16777215))
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText('确定')
+        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText('取消')
         self.buttonBox.setObjectName("buttonBox")
         self.horizontalLayout.addWidget(self.buttonBox)
 
