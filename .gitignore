@@ -4,4 +4,6 @@
 =======
 *.csv
 *txt
+*.pyc
+*.pkl
 >>>>>>> b1efae200da270b63f1d50d5cfee2aba49fd2d2f
