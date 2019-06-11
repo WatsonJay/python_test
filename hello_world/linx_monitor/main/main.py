@@ -1,4 +1,5 @@
 import sys
+import time
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWidget
 from PyQt5 import QtWidgets
@@ -126,6 +127,11 @@ class simpleForm(QWidget,Ui_simple_Form):
 
     def setIp(self, ip):
         self.ip_lineEdit.setText(ip)
+
+    # 显示日志
+    def showMessage(self, msg):
+        msg = "[" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "]" + msg
+        self.info_borwser.append(msg)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
