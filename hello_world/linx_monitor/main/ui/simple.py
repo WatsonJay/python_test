@@ -109,18 +109,23 @@ class Ui_simple_Form(object):
         self.info_borwser.setObjectName("info_borwser")
         self.horizontalLayout_4.addWidget(self.info_borwser)
         self.verticalLayout.addWidget(self.groupBox)
-        self.graph_widget = QtWidgets.QWidget(simple_Form)
+        self.graph_widget = pg.PlotWidget(simple_Form)
         self.graph_widget.setMinimumSize(QtCore.QSize(300, 200))
         self.graph_widget.setObjectName("graph_widget")
+        self.graph_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
+        self.graph_widget.setLabel(axis='left', text='百分比(%)')  # 设置Y轴标签
+        self.graph_widget.setYRange(0, 150)
+        self.graph_widget.setXRange(0, 20, padding=0)
+        self.graph_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
+        self.graph_widget.addLegend(size=(20, 10), offset=(12, 12))
         self.verticalLayout.addWidget(self.graph_widget)
-        self.main_layout = QtWidgets.QGridLayout(self.graph_widget)  # 创建一个网格布局
-        self.graph_widget.setLayout(self.main_layout)  # 设置主部件的布局为网格
-        self.plot_plt = pg.PlotWidget()  # 实例化一个绘图部件
-        self.plot_plt.showGrid(x=True, y=True,  alpha=0.5)  # 显示图形网格
-        self.plot_plt.setLabel(axis='left', text='百分比(%)')  # 设置Y轴标签
-        self.plot_plt.setYRange(max=100, min=0)
-        self.plot_plt.setLabel(axis='bottom', text='时间')  # 设置X轴标签
-        self.main_layout.addWidget(self.plot_plt)  # 添加绘图部件到K线图部件的网格布局层
+        self.point_label = pg.TextItem()  # 创建一个文本项
+        self.graph_widget.addItem(self.point_label)  # 在图形部件中添加文本项
+        self.cpu_line = self.graph_widget.plot(pen="r", name="cpu", symbolBrush=(255,0,0))
+        self.memory_line = self.graph_widget.plot(pen="g", name="内存", symbolBrush=(0,255,0))
+        self.disk_line = self.graph_widget.plot(pen="y", name="磁盘", symbolBrush=(255,255,0))
+        self.vLine = pg.InfiniteLine(angle=90, movable=False)  # 创建一个垂直线条
+        self.graph_widget.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
         self.verticalLayout.setStretch(0, 1)
         self.verticalLayout.setStretch(1, 2)
         self.verticalLayout.setStretch(2, 7)
