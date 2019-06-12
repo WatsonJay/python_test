@@ -1,8 +1,10 @@
 import sys
 import time
 
+from PyQt5.QtCore import pyqtSignal, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWidget
 from PyQt5 import QtWidgets
+import pyqtgraph as pg
 
 from hello_world.linx_monitor.main.config.config import config
 from hello_world.linx_monitor.main.threadClass import Thread
@@ -20,7 +22,8 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         self.serverModif.clicked.connect(self.serverModif_Open)
         self.serverDelete.clicked.connect(self.serverDel)
         self.server_listWidget.itemDoubleClicked.connect(self.showWidget)
-        self.tabWidget.tabCloseRequested.connect(self.tabWidget.removeTab)
+        self.tabWidget.tabCloseRequested.connect(self.widget_Thread_close)
+
 
     def loadConfig(self):
         try:
@@ -80,12 +83,18 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
                 self.tab.setIp(ip)
                 self.testThread = Thread()
                 self.testThread.getMsgSignal.connect(self.tab.set_data)
+                self.tab.stop.connect(self.testThread.__del__)
                 self.tabWidget.addTab(self.tab, sention)
                 self.tabWidget.setCurrentWidget(self.tab)
                 self.testThread.start()
             self.serverConfigDialog.destroy()
         except Exception as e:
             self.Tips("配置文件出现异常，请重置配置文件")
+
+    def widget_Thread_close(self, index):
+        widget = self.tabWidget.widget(index)
+        widget.stopThread()
+        self.tabWidget.removeTab(index)
 
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
@@ -125,27 +134,63 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.passwordEdit.setDisabled(True)
 
 class simpleForm(QWidget,Ui_simple_Form):
-    data_list = []
+    stop = pyqtSignal()
     def __init__(self):
+        self.cpu_list = []
+        self.mem_list = []
+        self.disk_list = []
+        self.n = 0
         super(simpleForm,self).__init__()
         self.setupUi(self)
-
+        self.move_slot = pg.SignalProxy(self.graph_widget.scene().sigMouseMoved, rateLimit=60, slot=self.print_slot)
 
     def setIp(self, ip):
         self.ip_lineEdit.setText(ip)
+
+    def stopThread(self):
+        self.stop.emit()
 
     # 显示日志
     def showMessage(self, msg):
         msg = "[" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "]" + msg
         self.info_borwser.append(msg)
 
-    def set_data(self,testnumber):
+    def set_data(self,cpu,mem,dick):
         try:
-            self.showMessage(str(testnumber))
-            self.data_list.append(testnumber)
-            self.plot_plt.plot().setData(self.data_list,pen='g')
+            if len(self.cpu_list) - self.n > 15:
+                self.n += 1
+                self.graph_widget.setXRange(self.n, self.n+20, padding=0)
+            self.showMessage(str(cpu)+'%,'+str(mem)+'%,'+str(dick)+'%')
+            self.cpu_list.append(cpu)
+            self.mem_list.append(mem)
+            self.disk_list.append(dick)
+            self.cpu_line.setData(self.cpu_list)
+            self.memory_line.setData(self.mem_list)
+            self.disk_line.setData(self.disk_list)
         except Exception as e:
             pass
+
+    # 响应鼠标移动绘制十字光标
+    def print_slot(self, event=None):
+        if event is None:
+            print("事件为空")
+        else:
+            pos = event[0]  # 获取事件的鼠标位置
+            try:
+                # 如果鼠标位置在绘图部件中
+                if self.graph_widget.sceneBoundingRect().contains(pos):
+                    mousePoint = self.graph_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
+                    index = int(mousePoint.x())  # 鼠标所处的X轴坐标
+                    if 0 <= index <= len(self.cpu_list)-1:
+                        # 在label中写入HTML
+                        self.point_label.setHtml(
+                            "<p style='color:white'>CPU：{0}%</p><p style='color:white'>内存：{1}%</p><p style='color:white'>磁盘：{2}%</p>".format(
+                            self.cpu_list[index], self.mem_list[index], self.disk_list[index]))
+                        self.point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                        # 设置垂直线条和水平线条的位置组成十字光标
+                        self.vLine.setPos(mousePoint.x())
+            except Exception as e:
+                pass
 
 
 if __name__ == '__main__':
