@@ -7,6 +7,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import pyqtgraph as pg
 
 class Ui_simple_Form(object):
     def setupUi(self, simple_Form):
@@ -112,6 +113,14 @@ class Ui_simple_Form(object):
         self.graph_widget.setMinimumSize(QtCore.QSize(300, 200))
         self.graph_widget.setObjectName("graph_widget")
         self.verticalLayout.addWidget(self.graph_widget)
+        self.main_layout = QtWidgets.QGridLayout(self.graph_widget)  # 创建一个网格布局
+        self.graph_widget.setLayout(self.main_layout)  # 设置主部件的布局为网格
+        self.plot_plt = pg.PlotWidget()  # 实例化一个绘图部件
+        self.plot_plt.showGrid(x=True, y=True,  alpha=0.5)  # 显示图形网格
+        self.plot_plt.setLabel(axis='left', text='百分比(%)')  # 设置Y轴标签
+        self.plot_plt.setYRange(max=100, min=0)
+        self.plot_plt.setLabel(axis='bottom', text='时间')  # 设置X轴标签
+        self.main_layout.addWidget(self.plot_plt)  # 添加绘图部件到K线图部件的网格布局层
         self.verticalLayout.setStretch(0, 1)
         self.verticalLayout.setStretch(1, 2)
         self.verticalLayout.setStretch(2, 7)

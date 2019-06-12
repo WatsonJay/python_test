@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWi
 from PyQt5 import QtWidgets
 
 from hello_world.linx_monitor.main.config.config import config
+from hello_world.linx_monitor.main.threadClass import Thread
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
 from hello_world.linx_monitor.main.ui.MonitorWindow import Ui_Monitor_Window
 from hello_world.linx_monitor.main.ui.simple import Ui_simple_Form
@@ -77,8 +78,11 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
             if self.serverConfigDialog.exec_():
                 self.tab = simpleForm()
                 self.tab.setIp(ip)
+                self.testThread = Thread()
+                self.testThread.getMsgSignal.connect(self.tab.set_data)
                 self.tabWidget.addTab(self.tab, sention)
                 self.tabWidget.setCurrentWidget(self.tab)
+                self.testThread.start()
             self.serverConfigDialog.destroy()
         except Exception as e:
             self.Tips("配置文件出现异常，请重置配置文件")
@@ -121,9 +125,11 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.passwordEdit.setDisabled(True)
 
 class simpleForm(QWidget,Ui_simple_Form):
+    data_list = []
     def __init__(self):
         super(simpleForm,self).__init__()
         self.setupUi(self)
+
 
     def setIp(self, ip):
         self.ip_lineEdit.setText(ip)
@@ -132,6 +138,15 @@ class simpleForm(QWidget,Ui_simple_Form):
     def showMessage(self, msg):
         msg = "[" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "]" + msg
         self.info_borwser.append(msg)
+
+    def set_data(self,testnumber):
+        try:
+            self.showMessage(str(testnumber))
+            self.data_list.append(testnumber)
+            self.plot_plt.plot().setData(self.data_list,pen='g')
+        except Exception as e:
+            pass
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
