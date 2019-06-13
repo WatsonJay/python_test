@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+# @Author  : Jaywatson
+# @File    : main.py
+# @Software: PyCharm
 import sys
 import time
 

@@ -1,7 +1,13 @@
+# -*- coding: utf-8 -*-
+# @Author  : Jaywatson
+# @File    : threadClass.py
+# @Software: PyCharm
 import random
 from time import sleep
 
 from PyQt5.QtCore import QThread, pyqtSignal
+from hello_world.linx_monitor.main.config.config import config
+from hello_world.linx_monitor.main import server_controller
 
 
 class Thread(QThread):
