@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Form</class>
+ <widget class="QWidget" name="Form">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>420</width>
+    <height>202</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout">
+   <item>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:11pt; font-weight:600;&quot;&gt;使用说明&lt;/span&gt;&lt;/p&gt;&lt;p&gt;1.新增服务器连接信息，包括ip,端口，用户名，密码，可进行测试连接&lt;/p&gt;&lt;p&gt;2.双击新增好的服务器，确认连接，进入监控页面&lt;/p&gt;&lt;p&gt;3.如目标服务器未上传nmon,可点击上传，上传路径默认为~,请确认用户权限&lt;/p&gt;&lt;p&gt;4.在目标服务器存在nmon的前提条件下，可开启性能监控记录&lt;/p&gt;&lt;p&gt;5.在nmon性能记录生成完成后，可进行下载，点击清除可清除当前记录&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>关闭</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>Form</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>333</x>
+     <y>178</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>413</x>
+     <y>169</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
