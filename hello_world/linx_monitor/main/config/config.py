@@ -71,6 +71,8 @@ class config:
     def getSection(self):
         config = self.readConfig()
         word = config.sections()
+        if 'sysconfig' in word:
+            word.remove('sysconfig')
         return word
 
 
