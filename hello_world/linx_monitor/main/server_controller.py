@@ -63,7 +63,10 @@ class Monitor_server:
         try:
             command = 'top -b -n 1'
             get_msgs = self.sshExecCmd(sshClient, command)
-            free = float(re.findall("(\d+\.?\d*)\%id\,", "".join(get_msgs))[0])
+            try:
+                free = float(re.findall("(\d+\.?\d*)\%id\,", "".join(get_msgs))[0])
+            except Exception as e:
+                free = float(re.findall("(\d+\.?\d*)\sid\,", "".join(get_msgs))[0])
             total_Used = round(100.0 - free, 2)
             cpu_info = total_Used
             return cpu_info
