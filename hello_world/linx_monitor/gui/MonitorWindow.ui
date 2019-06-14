@@ -31,8 +31,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>../icon/cloud-add.png</normaloff>../icon/cloud-add.png</iconset>
+           <iconset resource="../main/icons.qrc">
+            <normaloff>:/icon/server-add.png</normaloff>:/icon/server-add.png</iconset>
           </property>
          </widget>
         </item>
@@ -48,8 +48,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>../icon/cloud.png</normaloff>../icon/cloud.png</iconset>
+           <iconset resource="../main/icons.qrc">
+            <normaloff>:/icon/server-mod.png</normaloff>:/icon/server-mod.png</iconset>
           </property>
          </widget>
         </item>
@@ -65,8 +65,8 @@
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>../icon/cloud-remove.png</normaloff>../icon/cloud-remove.png</iconset>
+           <iconset resource="../main/icons.qrc">
+            <normaloff>:/icon/server-del.png</normaloff>:/icon/server-del.png</iconset>
           </property>
          </widget>
         </item>
@@ -148,7 +148,7 @@
   </action>
  </widget>
  <resources>
-  <include location="../icons.qrc"/>
+  <include location="../main/icons.qrc"/>
  </resources>
  <connections/>
 </ui>

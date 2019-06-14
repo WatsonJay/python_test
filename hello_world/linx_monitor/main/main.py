@@ -192,6 +192,8 @@ class simpleForm(QWidget,Ui_simple_Form):
         super(simpleForm,self).__init__()
         self.setupUi(self)
         self.setWarnLine()
+        self.visableUploadChange()
+        self.visabledownloadChange()
         self.move_slot = pg.SignalProxy(self.graph_widget.scene().sigMouseMoved, rateLimit=60, slot=self.print_slot)
         self.moveable_btn.clicked.connect(self.moveType)
 
@@ -201,6 +203,16 @@ class simpleForm(QWidget,Ui_simple_Form):
         self.CpuHLine.setPos(int(conf.getOption('sysconfig','cpuwarnline')))
         self.MemHLine.setPos(int(conf.getOption('sysconfig', 'memwarnline')))
         self.DiskHLine.setPos(int(conf.getOption('sysconfig', 'diskwarnline')))
+
+    # 切换上传可见状态
+    def visableUploadChange(self):
+        self.upload_label.setHidden(bool(1 - self.upload_label.isHidden()))
+        self.upload_progressBar.setHidden(bool(1 - self.upload_progressBar.isHidden()))
+
+    # 切换下载可见状态
+    def visabledownloadChange(self):
+        self.download_label.setHidden(bool(1 - self.download_label.isHidden()))
+        self.download_progressBar.setHidden(bool(1 - self.download_progressBar.isHidden()))
 
     # 填充ip
     def setIp(self, ip):
