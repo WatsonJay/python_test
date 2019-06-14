@@ -14,7 +14,9 @@ from hello_world.linx_monitor.main.config.config import config
 from hello_world.linx_monitor.main.threadClass import Thread
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
 from hello_world.linx_monitor.main.ui.MonitorWindow import Ui_Monitor_Window
+from hello_world.linx_monitor.main.ui.info import info_Form
 from hello_world.linx_monitor.main.ui.simple import Ui_simple_Form
+from hello_world.linx_monitor.main.ui.user_helper import User_helper
 
 
 class MyMainWindow(QMainWindow, Ui_Monitor_Window):
@@ -22,11 +24,24 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         super(MyMainWindow, self).__init__(parent)
         self.setupUi(self)
         self.loadConfig()
+        # self.actionshezhi.triggered.connect(self.settingShow)
+        self.actioninfo.triggered.connect(self.infoShow)
+        self.actionuse.triggered.connect(self.helperShow)
         self.serverAdd.clicked.connect(self.serverAdd_Open)
         self.serverModif.clicked.connect(self.serverModif_Open)
         self.serverDelete.clicked.connect(self.serverDel)
         self.server_listWidget.itemDoubleClicked.connect(self.showWidget)
         self.tabWidget.tabCloseRequested.connect(self.widget_Thread_close)
+
+    # 打开介绍窗口
+    def infoShow(self):
+        self.infoShow = infoForm()
+        self.infoShow.show()
+
+    # 打开介绍窗口
+    def helperShow(self):
+        self.helperShow = userhelper()
+        self.helperShow.show()
 
 
     def loadConfig(self):
@@ -195,6 +210,17 @@ class simpleForm(QWidget,Ui_simple_Form):
                         self.vLine.setPos(mousePoint.x())
             except Exception as e:
                 pass
+
+class infoForm(QWidget,info_Form):
+    def __init__(self, parent=None):
+        super(infoForm, self).__init__(parent)
+        self.setupUi(self)
+
+
+class userhelper(QWidget, User_helper):
+    def __init__(self, parent=None):
+        super(userhelper, self).__init__(parent)
+        self.setupUi(self)
 
 
 if __name__ == '__main__':

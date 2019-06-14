@@ -63,6 +63,8 @@ class Ui_Monitor_Window(object):
         self.menubar.setObjectName("menubar")
         self.menu_2 = QtWidgets.QMenu(self.menubar)
         self.menu_2.setObjectName("menu_2")
+        self.menu = QtWidgets.QMenu(self.menubar)
+        self.menu.setObjectName("menu")
         Monitor_Window.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(Monitor_Window)
         self.statusbar.setObjectName("statusbar")
@@ -71,8 +73,12 @@ class Ui_Monitor_Window(object):
         self.actionuse.setObjectName("actionuse")
         self.actioninfo = QtWidgets.QAction(Monitor_Window)
         self.actioninfo.setObjectName("actioninfo")
+        self.actionshezhi = QtWidgets.QAction(Monitor_Window)
+        self.actionshezhi.setObjectName("actionshezhi")
         self.menu_2.addAction(self.actionuse)
         self.menu_2.addAction(self.actioninfo)
+        self.menu.addAction(self.actionshezhi)
+        self.menubar.addAction(self.menu.menuAction())
         self.menubar.addAction(self.menu_2.menuAction())
 
         self.retranslateUi(Monitor_Window)
@@ -83,7 +89,9 @@ class Ui_Monitor_Window(object):
         _translate = QtCore.QCoreApplication.translate
         Monitor_Window.setWindowTitle(_translate("Monitor_Window", "linux远程监控器"))
         self.menu_2.setTitle(_translate("Monitor_Window", "帮助"))
+        self.menu.setTitle(_translate("Monitor_Window", "设置"))
         self.actionuse.setText(_translate("Monitor_Window", "使用说明"))
         self.actioninfo.setText(_translate("Monitor_Window", "软件信息"))
+        self.actionshezhi.setText(_translate("Monitor_Window", "系统设置"))
 
 
