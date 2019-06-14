@@ -1,0 +1,12 @@
+<RCC>
+  <qresource>
+    <file>icon/clear.png</file>
+    <file>icon/download.png</file>
+    <file>icon/moveable.png</file>
+    <file>icon/server-add.png</file>
+    <file>icon/server-del.png</file>
+    <file>icon/server-mod.png</file>
+    <file>icon/start.png</file>
+    <file>icon/upload.png</file>
+  </qresource>
+</RCC>
