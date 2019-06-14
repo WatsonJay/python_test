@@ -8,6 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import pyqtgraph as pg
+import hello_world.linx_monitor.main.ui.icons
 
 class Ui_simple_Form(object):
     def setupUi(self, simple_Form):
@@ -58,19 +59,19 @@ class Ui_simple_Form(object):
         self.start_record.setIcon(icon)
         self.start_record.setObjectName("start_record")
         self.gridLayout.addWidget(self.start_record, 0, 1, 1, 1)
-        self.stop_record = QtWidgets.QPushButton(simple_Form)
-        self.stop_record.setMaximumSize(QtCore.QSize(60, 20))
+        self.moveable_btn = QtWidgets.QPushButton(simple_Form)
+        self.moveable_btn.setMaximumSize(QtCore.QSize(60, 20))
         font = QtGui.QFont()
         font.setFamily("微软雅黑")
         font.setPointSize(8)
         font.setBold(False)
         font.setWeight(50)
-        self.stop_record.setFont(font)
+        self.moveable_btn.setFont(font)
         icon1 = QtGui.QIcon()
         icon1.addPixmap(QtGui.QPixmap("../icon/pause.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        self.stop_record.setIcon(icon1)
-        self.stop_record.setObjectName("stop_record")
-        self.gridLayout.addWidget(self.stop_record, 1, 1, 1, 1)
+        self.moveable_btn.setIcon(icon1)
+        self.moveable_btn.setObjectName("moveable_btn")
+        self.gridLayout.addWidget(self.moveable_btn, 1, 1, 1, 1)
         self.horizontalLayout_3 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label_3 = QtWidgets.QLabel(simple_Form)
@@ -114,18 +115,24 @@ class Ui_simple_Form(object):
         self.graph_widget.setObjectName("graph_widget")
         self.graph_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
         self.graph_widget.setLabel(axis='left', text='百分比(%)')  # 设置Y轴标签
-        self.graph_widget.setYRange(0, 150)
-        self.graph_widget.setXRange(0, 20, padding=0)
+        self.graph_widget.setYRange(0, 150) # 初始化Y轴显示范围
+        self.graph_widget.setXRange(0, 15, padding=0) # 初始化X轴显示范围
         self.graph_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
-        self.graph_widget.addLegend(size=(20, 10), offset=(12, 12))
+        self.graph_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示
         self.verticalLayout.addWidget(self.graph_widget)
         self.point_label = pg.TextItem()  # 创建一个文本项
         self.graph_widget.addItem(self.point_label)  # 在图形部件中添加文本项
         self.cpu_line = self.graph_widget.plot(pen="r", name="cpu", symbolBrush=(255,0,0))
         self.memory_line = self.graph_widget.plot(pen="g", name="内存", symbolBrush=(0,255,0))
         self.disk_line = self.graph_widget.plot(pen="y", name="磁盘", symbolBrush=(255,255,0))
-        self.vLine = pg.InfiniteLine(angle=90, movable=False)  # 创建一个垂直线条
-        self.graph_widget.addItem(self.vLine, ignoreBounds=True)  # 在图形部件中添加垂直线条
+        self.vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.CpuHLine = pg.InfiniteLine(angle=0, movable=False, pen="r")
+        self.MemHLine = pg.InfiniteLine(angle=0, movable=False, pen="g")
+        self.DiskHLine = pg.InfiniteLine(angle=0, movable=False, pen="y") # 创建线条
+        self.graph_widget.addItem(self.vLine, ignoreBounds=True)
+        self.graph_widget.addItem(self.CpuHLine, ignoreBounds=True)
+        self.graph_widget.addItem(self.MemHLine, ignoreBounds=True)
+        self.graph_widget.addItem(self.DiskHLine, ignoreBounds=True)# 在图形部件中添加线条
         self.verticalLayout.setStretch(0, 1)
         self.verticalLayout.setStretch(1, 2)
         self.verticalLayout.setStretch(2, 7)
@@ -140,7 +147,7 @@ class Ui_simple_Form(object):
         self.nmon_label.setText(_translate("simple_Form", "当前服务器未安装nmon"))
         self.upload_nmon.setText(_translate("simple_Form", "上传"))
         self.start_record.setText(_translate("simple_Form", "开始"))
-        self.stop_record.setText(_translate("simple_Form", "终止"))
+        self.moveable_btn.setText(_translate("simple_Form", "锁定"))
         self.label_3.setText(_translate("simple_Form", "当前性能记录："))
         self.record_name.setText(_translate("simple_Form", "TextLabel"))
         self.download_record.setText(_translate("simple_Form", "下载"))

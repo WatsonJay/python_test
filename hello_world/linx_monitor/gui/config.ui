@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>Dialog</class>
- <widget class="QDialog" name="Dialog">
+ <class>SysConfig_Dialog</class>
+ <widget class="QDialog" name="SysConfig_Dialog">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>系统设置</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -86,7 +86,7 @@
          <item row="0" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout" stretch="9,1">
            <item>
-            <widget class="QSpinBox" name="spinBox"/>
+            <widget class="QSpinBox" name="CPU_spinBox"/>
            </item>
            <item>
             <widget class="QLabel" name="label_4">
@@ -105,7 +105,7 @@
          <item row="1" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="9,1">
            <item>
-            <widget class="QSpinBox" name="spinBox_2"/>
+            <widget class="QSpinBox" name="MEM_spinBox"/>
            </item>
            <item>
             <widget class="QLabel" name="label_5">
@@ -124,7 +124,7 @@
          <item row="2" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_3" stretch="9,1">
            <item>
-            <widget class="QSpinBox" name="spinBox_3"/>
+            <widget class="QSpinBox" name="DISK_spinBox"/>
            </item>
            <item>
             <widget class="QLabel" name="label_6">
@@ -179,7 +179,7 @@
          <item row="0" column="1">
           <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="9,1">
            <item>
-            <widget class="QSpinBox" name="spinBox_4"/>
+            <widget class="QSpinBox" name="Simple_Rate_spinBox"/>
            </item>
            <item>
             <widget class="QLabel" name="label_8">
@@ -219,7 +219,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>SysConfig_Dialog</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -235,7 +235,7 @@
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Dialog</receiver>
+   <receiver>SysConfig_Dialog</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
