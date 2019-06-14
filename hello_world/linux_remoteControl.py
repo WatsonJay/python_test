@@ -55,7 +55,6 @@ class Monitor_server:
             return 0.00
 
     '''磁盘空间监控'''
-
     def get_disk_stat(self, sshClient):
         try:
             command = 'df -h ~'
@@ -65,6 +64,7 @@ class Monitor_server:
         except Exception as e:
             return 0.00
 
+    '''Cpu监控'''
     def get_Cpu_info(self, sshClient):
         try:
             command = 'top -b -n 1'
