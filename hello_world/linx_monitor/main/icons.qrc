@@ -1,5 +1,7 @@
 <RCC>
   <qresource>
+    <file>icon/error_password.jpg</file>
+    <file>icon/background.jpg</file>
     <file>icon/clear.png</file>
     <file>icon/download.png</file>
     <file>icon/moveable.png</file>

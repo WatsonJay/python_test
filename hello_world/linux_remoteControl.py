@@ -75,10 +75,36 @@ class Monitor_server:
             return cpu_info
         except Exception as e:
             return 0.00
+        
+    def nmon_checked(self, sshClient):
+        try:
+            command = 'find ~/monitor -name monitor_used'
+            get_msgs = self.sshExecCmd(sshClient, command)
+            if len(re.findall("/monitor/monitor_used", "".join(get_msgs))) > 0:
+                return True
+            else:
+                return False
+        except Exception as e:
+            return False
 
+    def sftp_upload_file(self,hostname,port,username,password):
+        try:
+            t = paramiko.Transport((hostname, port))
+            t.connect(username=username, password=password)
+            sftp = paramiko.SFTPClient.from_transport(t)
+            try:
+                sftp.stat('/home/monitor/')
+            except IOError:
+                sftp.mkdir('/home/monitor/', 0o777)
+            sftp.put('temp/monitor_used','/home/monitor/monitor_used')
+            sftp.chmod('/home/monitor/monitor_used', 0o777)
+            t.close()
+            return '上传成功'
+        except Exception as e:
+            return e
 
 if __name__ == '__main__':
-    hostname = '192.168.43.10'
+    hostname = '192.168.132.129'
     username = 'root'
     password = 'jaywatson'
     port = 22
@@ -87,6 +113,9 @@ if __name__ == '__main__':
     cpu_info = moni.get_Cpu_info(test_sshConnect)
     Mem_info = moni.get_mem_info(test_sshConnect)
     disk_info = moni.get_disk_stat(test_sshConnect)
+    nmon_checked = moni.nmon_checked(test_sshConnect)
+    text = moni.sftp_upload_file(hostname, port, username, password)
     print(cpu_info)
     print(Mem_info)
     print(disk_info)
+    print(nmon_checked)

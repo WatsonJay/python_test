@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'config.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.3
+# Created by: PyQt5 UI code generator 5.11.2
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -50,8 +50,6 @@ class Ui_SysConfig_Dialog(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.CPU_spinBox = QtWidgets.QSpinBox(self.tab)
         self.CPU_spinBox.setObjectName("CPU_spinBox")
-        self.CPU_spinBox.setMinimum(0)
-        self.CPU_spinBox.setMaximum(100)
         self.horizontalLayout.addWidget(self.CPU_spinBox)
         self.label_4 = QtWidgets.QLabel(self.tab)
         font = QtGui.QFont()
@@ -66,8 +64,6 @@ class Ui_SysConfig_Dialog(object):
         self.horizontalLayout_2.setObjectName("horizontalLayout_2")
         self.MEM_spinBox = QtWidgets.QSpinBox(self.tab)
         self.MEM_spinBox.setObjectName("MEM_spinBox")
-        self.MEM_spinBox.setMinimum(0)
-        self.MEM_spinBox.setMaximum(100)
         self.horizontalLayout_2.addWidget(self.MEM_spinBox)
         self.label_5 = QtWidgets.QLabel(self.tab)
         font = QtGui.QFont()
@@ -82,8 +78,6 @@ class Ui_SysConfig_Dialog(object):
         self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.DISK_spinBox = QtWidgets.QSpinBox(self.tab)
         self.DISK_spinBox.setObjectName("DISK_spinBox")
-        self.DISK_spinBox.setMinimum(0)
-        self.DISK_spinBox.setMaximum(100)
         self.horizontalLayout_3.addWidget(self.DISK_spinBox)
         self.label_6 = QtWidgets.QLabel(self.tab)
         font = QtGui.QFont()
@@ -114,8 +108,6 @@ class Ui_SysConfig_Dialog(object):
         self.horizontalLayout_4.setObjectName("horizontalLayout_4")
         self.Simple_Rate_spinBox = QtWidgets.QSpinBox(self.tab_2)
         self.Simple_Rate_spinBox.setObjectName("Simple_Rate_spinBox")
-        self.Simple_Rate_spinBox.setMinimum(1)
-        self.Simple_Rate_spinBox.setMaximum(60)
         self.horizontalLayout_4.addWidget(self.Simple_Rate_spinBox)
         self.label_8 = QtWidgets.QLabel(self.tab_2)
         font = QtGui.QFont()
@@ -134,10 +126,10 @@ class Ui_SysConfig_Dialog(object):
         self.label_9.setFont(font)
         self.label_9.setObjectName("label_9")
         self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_9)
-        self.password_lineEdit = QtWidgets.QLineEdit(self.tab_2)
-        self.password_lineEdit.setEchoMode(QtWidgets.QLineEdit.Password)
-        self.password_lineEdit.setObjectName("password_lineEdit")
-        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.password_lineEdit)
+        self.lineEdit = QtWidgets.QLineEdit(self.tab_2)
+        self.lineEdit.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.lineEdit.setObjectName("lineEdit")
+        self.formLayout_2.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.lineEdit)
         self.verticalLayout_2.addLayout(self.formLayout_2)
         self.tabWidget.addTab(self.tab_2, "")
         self.verticalLayout.addWidget(self.tabWidget)
@@ -145,9 +137,8 @@ class Ui_SysConfig_Dialog(object):
         self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText('确定')
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText('取消')
         self.verticalLayout.addWidget(self.buttonBox)
+
         self.retranslateUi(SysConfig_Dialog)
         self.tabWidget.setCurrentIndex(0)
         self.buttonBox.accepted.connect(SysConfig_Dialog.accept)
