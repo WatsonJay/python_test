@@ -18,6 +18,7 @@ from hello_world.linx_monitor.main.ui.config import Ui_SysConfig_Dialog
 from hello_world.linx_monitor.main.ui.info import info_Form
 from hello_world.linx_monitor.main.ui.simple import Ui_simple_Form
 from hello_world.linx_monitor.main.ui.user_helper import User_helper
+from hello_world.linx_monitor.main.server_controller import Monitor_server
 
 # 主页面
 class MyMainWindow(QMainWindow, Ui_Monitor_Window):
@@ -120,18 +121,20 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
             if self.serverConfigDialog.exec_():
                 self.tab = simpleForm()
                 self.tab.setIp(ip)
+                self.tab.name = sention
+                self.tab.checknmon()
                 self.mointorThread = Thread()
                 self.mointorThread.sendinfosSignal.connect(self.tab.set_data)
                 self.mointorThread.sendExptionSignal.connect(self.tab.showMessage)
                 self.tab.stop.connect(self.mointorThread.__del__)
-                self.tab.name.connect(lambda: self.mointorThread.getInfos(sention))  # 通过信号槽设置名称
-                self.tab.name.emit()
+                self.tab.nameSignal.connect(lambda: self.mointorThread.getInfos(sention))  # 通过信号槽设置名称
+                self.tab.nameSignal.emit()
                 self.tabWidget.addTab(self.tab, sention)
                 self.tabWidget.setCurrentWidget(self.tab)
                 self.mointorThread.start()
             self.serverConfigDialog.destroy()
         except Exception as e:
-            self.Tips("配置文件出现异常，请重置配置文件")
+            self.Tips("线程启动异常，请重试或联系管理员")
 
     # 中止服务器监控页面线程窗口
     def widget_Thread_close(self, index):
@@ -182,18 +185,22 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
 class simpleForm(QWidget,Ui_simple_Form):
     # 信号槽
     stop = pyqtSignal()
-    name = pyqtSignal()
+    nameSignal = pyqtSignal()
     # 初始化
     def __init__(self):
         self.cpu_list = []
         self.mem_list = []
         self.disk_list = []
+        self.name = ''
         self.moveable = True
         super(simpleForm,self).__init__()
         self.setupUi(self)
         self.setWarnLine()
         self.visableUploadChange()
         self.visabledownloadChange()
+        self.start_record.setDisabled(True)
+        self.download_record.setDisabled(True)
+        self.analysis_record.setDisabled(True)
         self.move_slot = pg.SignalProxy(self.graph_widget.scene().sigMouseMoved, rateLimit=60, slot=self.print_slot)
         self.moveable_btn.clicked.connect(self.moveType)
 
@@ -217,6 +224,20 @@ class simpleForm(QWidget,Ui_simple_Form):
     # 填充ip
     def setIp(self, ip):
         self.ip_lineEdit.setText(ip)
+
+    def checknmon(self):
+        conf = config()
+        infos = conf.sentionAll(self.name)
+        monitor = Monitor_server()
+        ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
+        nmon_checked = monitor.nmon_checked(ssh)
+        if nmon_checked:
+            self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
+            self.upload_nmon.setDisabled(True)
+            self.start_record.setDisabled(False)
+        else:
+            self.nmon_label.setText('当前服务器未安装nmon，请点击上传')
+        monitor.sshClose(ssh)
 
     # 停止线程
     def stopThread(self):
@@ -289,16 +310,21 @@ class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
             self.MEM_spinBox.setValue(int(sysconfig['memwarnline']))
             self.DISK_spinBox.setValue(int(sysconfig['diskwarnline']))
             self.Simple_Rate_spinBox.setValue(int(sysconfig['simplerating']))
+            self.password_lineEdit.setText(conf.decrypt(sysconfig['password']))
         except Exception as e:
             self.Tips("配置文件出现异常，请重置配置文件")
 
+    # 保存系统配置
     def getDict(self):
+        conf = config()
         info ={}
         info['cpuwarnline'] = str(self.CPU_spinBox.value())
         info['memwarnline'] = str(self.MEM_spinBox.value())
         info['diskwarnline'] = str(self.DISK_spinBox.value())
         info['simplerating'] = str(self.Simple_Rate_spinBox.value())
+        info['password'] = conf.encrypt(self.password_lineEdit.text())
         return info
+
     # 提示窗口
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)

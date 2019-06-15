@@ -75,7 +75,7 @@ class Monitor_server:
 
     def nmon_checked(self, sshClient):
         try:
-            command = 'find ~/monitor -name monitor_used'
+            command = 'find /home/monitor -name monitor_used'
             get_msgs = self.sshExecCmd(sshClient, command)
             if len(re.findall("/monitor/monitor_used", "".join(get_msgs))) > 0:
                 return True

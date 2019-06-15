@@ -2,7 +2,6 @@
 # @Author  : Jaywatson
 # @File    : threadClass.py
 # @Software: PyCharm
-import random
 from time import sleep
 
 from PyQt5.QtCore import QThread, pyqtSignal
