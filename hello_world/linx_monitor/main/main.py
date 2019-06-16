@@ -236,36 +236,45 @@ class simpleForm(QWidget,Ui_simple_Form):
 
     # 检测文件存在
     def checknmon(self):
-        conf = config()
-        infos = conf.sentionAll(self.name)
-        monitor = Monitor_server()
-        ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
-        nmon_checked = monitor.nmon_checked(ssh)
-        if nmon_checked:
-            self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
-            self.upload_nmon.setDisabled(True)
-            self.start_record.setDisabled(False)
-        else:
-            self.nmon_label.setText('当前服务器未安装nmon，请点击上传')
-        monitor.sshClose(ssh)
+        try:
+            conf = config()
+            infos = conf.sentionAll(self.name)
+            monitor = Monitor_server()
+            ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
+            nmon_checked = monitor.nmon_checked(ssh)
+            if nmon_checked:
+                self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
+                self.upload_nmon.setDisabled(True)
+                self.start_record.setDisabled(False)
+            else:
+                self.nmon_label.setText('当前服务器未安装nmon，请点击上传')
+            monitor.sshClose(ssh)
+        except Exception as e:
+            self.showMessage(str(e))
+            pass
 
     # 上传文件
     def uploadfile(self):
-        conf = config()
-        infos = conf.sentionAll(self.name)
-        monitor = Monitor_server()
-        text = monitor.sftp_upload_file(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
-        if text == '上传成功':
-            self.showMessage('文件已上传')
-            self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
-            self.upload_nmon.setDisabled(True)
-            self.start_record.setDisabled(False)
-        else:
-            self.nmon_label.setText('当前服务器安装nmon失败，请点击再次上传')
+        try:
+            conf = config()
+            infos = conf.sentionAll(self.name)
+            monitor = Monitor_server()
+            text = monitor.sftp_upload_file(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
+            if text == '上传成功':
+                self.showMessage('文件已上传')
+                self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
+                self.upload_nmon.setDisabled(True)
+                self.start_record.setDisabled(False)
+            else:
+                self.nmon_label.setText('当前服务器安装nmon失败，请点击再次上传')
+        except Exception as e:
+            self.showMessage(str(e))
+            pass
 
     # 启动nmon记录
     def record_command(self):
         try:
+            self.download_record.setDisabled(True)
             self.timerDialog = timerDialog()
             if self.timerDialog.exec_():
                 nmon_infos = self.timerDialog.getInfos()
@@ -293,21 +302,28 @@ class simpleForm(QWidget,Ui_simple_Form):
 
     # 下载nmon记录
     def nmon_download(self):
-        self.visabledownloadChange()
-        self.DownloadThread = DownloadThread()
-        self.nameSignal.connect(lambda: self.DownloadThread.getInfos(self.name))
-        self.fileNameSignal.connect(lambda: self.DownloadThread.getfileName(self.fileName))
-        self.DownloadThread.sendSignal.connect(self.set_data)
-        self.DownloadThread.sendExptionSignal.connect(self.showProcess)
-        self.nameSignal.emit()
-        self.fileNameSignal.emit()
-        self.DownloadThread.start()
+        try:
+            self.visabledownloadChange()
+            self.DownloadThread = DownloadThread()
+            self.nameSignal.connect(lambda: self.DownloadThread.getInfos(self.name))
+            self.fileNameSignal.connect(lambda: self.DownloadThread.getfileName(self.fileName))
+            self.stop.connect(self.DownloadThread.__del__)
+            self.DownloadThread.sendExptionSignal.connect(self.showMessage)
+            self.DownloadThread.sendSignal.connect(self.showProcess)
+            self.nameSignal.emit()
+            self.fileNameSignal.emit()
+            self.DownloadThread.start()
+        except Exception as e:
+            self.showMessage(str(e))
+            pass
 
     # 下载进度
     def showProcess(self, value):
         self.download_progressBar.setValue(value)
         if value == 100:
             self.visabledownloadChange()
+            self.analysis_record.setDisabled(False)
+            self.stop.emit()
 
     # 停止线程
     def stopThread(self):

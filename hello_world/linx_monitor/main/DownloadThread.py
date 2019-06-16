@@ -23,6 +23,7 @@ class DownloadThread(QThread):
             t.connect(username=self.infos['user'], password=self.infos['password'])
             sftp = paramiko.SFTPClient.from_transport(t)
             sftp.get('/home/monitor/'+self.fileName, 'temp/'+self.fileName, callback=self.callback)
+            t.close()
         except Exception as e:
             self.sendExptionSignal.emit("SSH链接失败：[hostname:%s];[username:%s];[error:%s],请关闭tab页并检查配置" % (self.infos['ip'], self.infos['user'], e))
 
