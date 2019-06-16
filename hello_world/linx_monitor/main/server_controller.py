@@ -73,6 +73,18 @@ class Monitor_server:
         except Exception as e:
             return 0.00
 
+    '''运行nmon'''
+    def nmon_run(self, sshClient, name, time, tap):
+        try:
+            command = '/home/monitor/monitor_used -s '+time+' -c '+tap+' -F '+name+'.nmon  -m /home/monitor/'
+            get_msgs = self.sshExecCmd(sshClient, command)
+            if get_msgs == []:
+                return '启动运行,请稍后'
+            else:
+                return '启动异常，请重试'
+        except Exception as e:
+            return e
+
     def nmon_checked(self, sshClient):
         try:
             command = 'find /home/monitor -name monitor_used'

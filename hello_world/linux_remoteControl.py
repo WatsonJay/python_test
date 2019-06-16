@@ -103,6 +103,28 @@ class Monitor_server:
         except Exception as e:
             return e
 
+    def sftp_download_file(self, hostname, port, username, password):
+        try:
+            t = paramiko.Transport((hostname, port))
+            t.connect(username=username, password=password)
+            sftp = paramiko.SFTPClient.from_transport(t)
+            sftp.get('/home/monitor/axx.nmon', 'temp/axx.nmon', callback=self.callback)
+        except Exception as e:
+            return e
+
+    '''磁盘空间监控'''
+
+    def nmon_run(self, sshClient):
+        try:
+            command = '/home/monitor/monitor_used -s 1 -c 120 -F test.nmon  -m /home/monitor/'
+            get_msgs = self.sshExecCmd(sshClient, command)
+            return get_msgs
+        except Exception as e:
+            return e
+
+    def callback(self, current, total):
+        print("下载了{}".format(round(current/total*100, 2)))
+
 if __name__ == '__main__':
     hostname = '192.168.132.129'
     username = 'root'
@@ -115,7 +137,10 @@ if __name__ == '__main__':
     disk_info = moni.get_disk_stat(test_sshConnect)
     nmon_checked = moni.nmon_checked(test_sshConnect)
     text = moni.sftp_upload_file(hostname, port, username, password)
+    get_msgs = moni.nmon_run(test_sshConnect)
+    moni.sftp_download_file(hostname, port, username, password)
     print(cpu_info)
     print(Mem_info)
     print(disk_info)
     print(nmon_checked)
+    print(get_msgs)

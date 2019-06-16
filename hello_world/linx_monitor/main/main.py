@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWi
 from PyQt5 import QtWidgets
 import pyqtgraph as pg
 
+from hello_world.linx_monitor.main.DownloadThread import DownloadThread
 from hello_world.linx_monitor.main.config.config import config
 from hello_world.linx_monitor.main.threadClass import Thread
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
@@ -17,6 +18,7 @@ from hello_world.linx_monitor.main.ui.MonitorWindow import Ui_Monitor_Window
 from hello_world.linx_monitor.main.ui.config import Ui_SysConfig_Dialog
 from hello_world.linx_monitor.main.ui.info import info_Form
 from hello_world.linx_monitor.main.ui.simple import Ui_simple_Form
+from hello_world.linx_monitor.main.ui.timer_Dialog import Ui_timer_Dialog
 from hello_world.linx_monitor.main.ui.user_helper import User_helper
 from hello_world.linx_monitor.main.server_controller import Monitor_server
 
@@ -112,10 +114,10 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     def showWidget(self):
         try:
             conf = config()
-            self.serverConfigDialog = serverConfigDialog()
             sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
             info = conf.sentionAll(sention)
             ip = info['ip']
+            self.serverConfigDialog = serverConfigDialog()
             self.serverConfigDialog.setDict(info)
             self.serverConfigDialog.disable()
             if self.serverConfigDialog.exec_():
@@ -186,15 +188,18 @@ class simpleForm(QWidget,Ui_simple_Form):
     # 信号槽
     stop = pyqtSignal()
     nameSignal = pyqtSignal()
+    fileNameSignal = pyqtSignal()
     # 初始化
     def __init__(self):
         self.cpu_list = []
         self.mem_list = []
         self.disk_list = []
         self.name = ''
+        self.fileName = ''
         self.moveable = True
         super(simpleForm,self).__init__()
         self.setupUi(self)
+        self.timer = QTimer(self)
         self.setWarnLine()
         self.visableUploadChange()
         self.visabledownloadChange()
@@ -202,7 +207,11 @@ class simpleForm(QWidget,Ui_simple_Form):
         self.download_record.setDisabled(True)
         self.analysis_record.setDisabled(True)
         self.move_slot = pg.SignalProxy(self.graph_widget.scene().sigMouseMoved, rateLimit=60, slot=self.print_slot)
+        self.upload_nmon.clicked.connect(self.uploadfile)
         self.moveable_btn.clicked.connect(self.moveType)
+        self.start_record.clicked.connect(self.record_command)
+        self.timer.timeout.connect(self.nmon_finished)
+        self.download_record.clicked.connect(self.nmon_download)
 
     # 设置预警线
     def setWarnLine(self):
@@ -225,6 +234,7 @@ class simpleForm(QWidget,Ui_simple_Form):
     def setIp(self, ip):
         self.ip_lineEdit.setText(ip)
 
+    # 检测文件存在
     def checknmon(self):
         conf = config()
         infos = conf.sentionAll(self.name)
@@ -238,6 +248,66 @@ class simpleForm(QWidget,Ui_simple_Form):
         else:
             self.nmon_label.setText('当前服务器未安装nmon，请点击上传')
         monitor.sshClose(ssh)
+
+    # 上传文件
+    def uploadfile(self):
+        conf = config()
+        infos = conf.sentionAll(self.name)
+        monitor = Monitor_server()
+        text = monitor.sftp_upload_file(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
+        if text == '上传成功':
+            self.showMessage('文件已上传')
+            self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
+            self.upload_nmon.setDisabled(True)
+            self.start_record.setDisabled(False)
+        else:
+            self.nmon_label.setText('当前服务器安装nmon失败，请点击再次上传')
+
+    # 启动nmon记录
+    def record_command(self):
+        try:
+            self.timerDialog = timerDialog()
+            if self.timerDialog.exec_():
+                nmon_infos = self.timerDialog.getInfos()
+                conf = config()
+                infos = conf.sentionAll(self.name)
+                monitor = Monitor_server()
+                ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'], conf.decrypt(infos['password']))
+                get_msgs = monitor.nmon_run(ssh, nmon_infos['name'], nmon_infos['time'], nmon_infos['tap'])
+                self.showMessage(get_msgs)
+                self.start_record.setDisabled(True)
+                self.record_name.setText(nmon_infos['name']+'.nmon')
+                self.fileName = nmon_infos['name']+'.nmon'
+                self.timer.start(int(nmon_infos['time'])*int(nmon_infos['tap'])*1000+10)
+            self.timerDialog.destroy()
+        except Exception as e:
+            self.showMessage(str(e))
+            pass
+
+    # 返回nmon记录
+    def nmon_finished(self):
+        self.start_record.setDisabled(False)
+        self.download_record.setDisabled(False)
+        self.showMessage('nmon运行结束')
+        self.timer.stop()
+
+    # 下载nmon记录
+    def nmon_download(self):
+        self.visabledownloadChange()
+        self.DownloadThread = DownloadThread()
+        self.nameSignal.connect(lambda: self.DownloadThread.getInfos(self.name))
+        self.fileNameSignal.connect(lambda: self.DownloadThread.getfileName(self.fileName))
+        self.DownloadThread.sendSignal.connect(self.set_data)
+        self.DownloadThread.sendExptionSignal.connect(self.showProcess)
+        self.nameSignal.emit()
+        self.fileNameSignal.emit()
+        self.DownloadThread.start()
+
+    # 下载进度
+    def showProcess(self, value):
+        self.download_progressBar.setValue(value)
+        if value == 100:
+            self.visabledownloadChange()
 
     # 停止线程
     def stopThread(self):
@@ -343,6 +413,19 @@ class userhelper(QWidget, User_helper):
         super(userhelper, self).__init__(parent)
         self.setupUi(self)
 
+# nmon启动参数页面
+class timerDialog(QDialog,Ui_timer_Dialog):
+    # 初始化
+    def __init__(self, parent=None):
+        super(timerDialog, self).__init__(parent)
+        self.setupUi(self)
+
+    def getInfos(self):
+        infos = {}
+        infos['time'] = str(self.time_spinBox.value())
+        infos['tap'] = str(self.tap_spinBox.value())
+        infos['name'] = self.fileName_lineEdit.text()
+        return infos
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
