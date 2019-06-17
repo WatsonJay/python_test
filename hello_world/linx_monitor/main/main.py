@@ -186,6 +186,7 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
 # 性能监控统一页面
 class simpleForm(QWidget,Ui_simple_Form):
     # 信号槽
+    Downstop = pyqtSignal()
     stop = pyqtSignal()
     nameSignal = pyqtSignal()
     fileNameSignal = pyqtSignal()
@@ -287,7 +288,7 @@ class simpleForm(QWidget,Ui_simple_Form):
                 self.start_record.setDisabled(True)
                 self.record_name.setText(nmon_infos['name']+'.nmon')
                 self.fileName = nmon_infos['name']+'.nmon'
-                self.timer.start(int(nmon_infos['time'])*int(nmon_infos['tap'])*1000+10)
+                self.timer.start(int(nmon_infos['time'])*int(nmon_infos['tap']+1)*1000)
             self.timerDialog.destroy()
         except Exception as e:
             self.showMessage(str(e))
@@ -307,8 +308,8 @@ class simpleForm(QWidget,Ui_simple_Form):
             self.DownloadThread = DownloadThread()
             self.nameSignal.connect(lambda: self.DownloadThread.getInfos(self.name))
             self.fileNameSignal.connect(lambda: self.DownloadThread.getfileName(self.fileName))
-            self.stop.connect(self.DownloadThread.__del__)
-            self.DownloadThread.sendExptionSignal.connect(self.showMessage)
+            self.Downstop.connect(self.DownloadThread.__del__)
+            self.DownloadThread.sendDownExptionSignal.connect(self.showMessage)
             self.DownloadThread.sendSignal.connect(self.showProcess)
             self.nameSignal.emit()
             self.fileNameSignal.emit()
@@ -323,7 +324,7 @@ class simpleForm(QWidget,Ui_simple_Form):
         if value == 100:
             self.visabledownloadChange()
             self.analysis_record.setDisabled(False)
-            self.stop.emit()
+            self.Downstop.emit()
 
     # 停止线程
     def stopThread(self):
@@ -378,6 +379,8 @@ class simpleForm(QWidget,Ui_simple_Form):
     def showMessage(self, msg):
         msg = "[" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "]" + msg
         self.info_borwser.append(msg)
+        if "文件下载异常" in msg:
+            self.visabledownloadChange()
 
 # 系统设置页面
 class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
