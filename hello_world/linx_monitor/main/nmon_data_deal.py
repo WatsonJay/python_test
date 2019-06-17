@@ -13,6 +13,8 @@ class nmon_data_deal:
         self.NET_For_deal = []
         self.network_name = ''
         self.ip = ''
+        self.os = ''
+        self.simpleNumber = 0
 
     def file_read(self ,path):
         file = open(path, 'r', encoding='UTF-8')
@@ -38,10 +40,19 @@ class nmon_data_deal:
                 data = re.sub('\n', '', line).split(',')
                 data_need = [data[3], data[-2]]
                 self.NET_For_deal.append(data_need)
-            if 'BBBP,302,ifconfig,"' in line:
-                self.network_name = re.findall('BBBP,302,ifconfig\,\"(.+)\s\s\s', line)[0].strip()
-            if 'BBBP,303,ifconfig,"' in line:
-                self.ip = re.findall('inet addr\:(.+)\sBcast\:', line)[0].strip()
+            if ',ifconfig,"' in line and self.ip == '':
+                if len(re.findall('\,ifconfig\,\"(.+)\s\s\s\s\s\sLink', line)) != 0:
+                    self.network_name = re.findall('\,ifconfig\,\"(.+)\s\s\s\s\s\sLink', line)[0].strip()
+                if len(re.findall('\,ifconfig\,\"(.+)\:\s', line)) != 0:
+                    self.network_name = re.findall('\,ifconfig\,\"(.+)\:\s', line)[0].strip()
+                if len(re.findall('inet\saddr\:(.+)\sBcast\:', line)) != 0:
+                    self.ip = re.findall('inet\saddr\:(.+)\sBcast\:', line)[0].strip()
+                if len(re.findall('inet\s(.+)\s\snetmask', line)) != 0:
+                    self.ip = re.findall('inet\s(.+)\s\snetmask', line)[0].strip()
+            if 'AAA,snapshots,' in line:
+                self.simpleNumber = int(re.findall('AAA,snapshots\,(.+)\n', line)[0].strip())
+            if 'AAA,OS,' in line:
+                self.os = re.findall('AAA,OS\,(.+)\n', line)[0].strip()
             line = file.readline()
         file.close()
         info_Maps = {}
@@ -52,8 +63,10 @@ class nmon_data_deal:
         info_Maps['NET'] = self.NET_For_deal
         info_Maps['network_name'] = self.network_name
         info_Maps['ip'] = self.ip
+        info_Maps['simpleNumber'] = self.simpleNumber
+        info_Maps['os'] = self.os
         return info_Maps
 
 if __name__ == '__main__':
     test = nmon_data_deal()
-    test.file_read('temp/test.nmon')
+    test.file_read('temp/axx.nmon')
