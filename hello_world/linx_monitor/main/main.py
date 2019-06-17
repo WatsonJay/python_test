@@ -15,6 +15,7 @@ from hello_world.linx_monitor.main.config.config import config
 from hello_world.linx_monitor.main.threadClass import Thread
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
 from hello_world.linx_monitor.main.ui.MonitorWindow import Ui_Monitor_Window
+from hello_world.linx_monitor.main.ui.analysis import Ui_nmonAnalysis_Form
 from hello_world.linx_monitor.main.ui.config import Ui_SysConfig_Dialog
 from hello_world.linx_monitor.main.ui.info import info_Form
 from hello_world.linx_monitor.main.ui.simple import Ui_simple_Form
@@ -213,6 +214,7 @@ class simpleForm(QWidget,Ui_simple_Form):
         self.start_record.clicked.connect(self.record_command)
         self.timer.timeout.connect(self.nmon_finished)
         self.download_record.clicked.connect(self.nmon_download)
+        self.analysis_record.clicked.connect(self.analysis_show)
 
     # 设置预警线
     def setWarnLine(self):
@@ -288,7 +290,7 @@ class simpleForm(QWidget,Ui_simple_Form):
                 self.start_record.setDisabled(True)
                 self.record_name.setText(nmon_infos['name']+'.nmon')
                 self.fileName = nmon_infos['name']+'.nmon'
-                self.timer.start(int(nmon_infos['time'])*int(nmon_infos['tap']+1)*1000)
+                self.timer.start((int(nmon_infos['time'])*int(nmon_infos['tap'])+1)*1000)
             self.timerDialog.destroy()
         except Exception as e:
             self.showMessage(str(e))
@@ -329,6 +331,10 @@ class simpleForm(QWidget,Ui_simple_Form):
     # 停止线程
     def stopThread(self):
         self.stop.emit()
+
+    def analysis_show(self):
+        self.analysisShow = analysis_form()
+        self.analysisShow.show()
 
     # 是否自动移动
     def moveType(self):
@@ -445,6 +451,13 @@ class timerDialog(QDialog,Ui_timer_Dialog):
         infos['tap'] = str(self.tap_spinBox.value())
         infos['name'] = self.fileName_lineEdit.text()
         return infos
+
+# 分析页面
+class analysis_form(QWidget, Ui_nmonAnalysis_Form):
+    # 初始化
+    def __init__(self, parent=None):
+        super(analysis_form, self).__init__(parent)
+        self.setupUi(self)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
