@@ -81,7 +81,7 @@ class Monitor_server:
             if get_msgs == []:
                 return '启动运行,请稍后'
             else:
-                return '启动异常，请重试'
+                return get_msgs
         except Exception as e:
             return e
 
