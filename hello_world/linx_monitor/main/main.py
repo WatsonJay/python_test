@@ -2,16 +2,18 @@
 # @Author  : Jaywatson
 # @File    : main.py
 # @Software: PyCharm
+import os
 import sys
 import time
 
 from PyQt5.QtCore import pyqtSignal, QTimer
-from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWidget
+from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWidget, QFileDialog
 from PyQt5 import QtWidgets
 import pyqtgraph as pg
 
 from hello_world.linx_monitor.main.DownloadThread import DownloadThread
 from hello_world.linx_monitor.main.config.config import config
+from hello_world.linx_monitor.main.nmon_data_deal import nmon_data_deal
 from hello_world.linx_monitor.main.threadClass import Thread
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
 from hello_world.linx_monitor.main.ui.MonitorWindow import Ui_Monitor_Window
@@ -23,6 +25,7 @@ from hello_world.linx_monitor.main.ui.timer_Dialog import Ui_timer_Dialog
 from hello_world.linx_monitor.main.ui.user_helper import User_helper
 from hello_world.linx_monitor.main.server_controller import Monitor_server
 
+
 # 主页面
 class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     # 初始化
@@ -33,6 +36,7 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         self.actionshezhi.triggered.connect(self.sysConfigDialogShow)
         self.actioninfo.triggered.connect(self.infoShow)
         self.actionuse.triggered.connect(self.helperShow)
+        self.actionnmon.triggered.connect(self.analysis_show)
         self.serverAdd.clicked.connect(self.serverAdd_Open)
         self.serverModif.clicked.connect(self.serverModif_Open)
         self.serverDelete.clicked.connect(self.serverDel)
@@ -78,7 +82,7 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
             self.serverConfigDialog = serverConfigDialog()
             if self.serverConfigDialog.exec_():
                 infos = self.serverConfigDialog.getDict()
-                conf.cmdSection(infos['name'],infos)
+                conf.cmdSection(infos['name'], infos)
             self.serverConfigDialog.destroy()
             self.loadConfig()
         except Exception as e:
@@ -145,9 +149,16 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         widget.stopThread()
         self.tabWidget.removeTab(index)
 
+    # 打开分析窗口
+    def analysis_show(self):
+        self.analysisShow = analysis_form()
+        self.analysisShow.show()
+        self.analysisShow.loadfile('')
+
     # 提示窗口
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
+
 
 # 服务器配置页面
 class serverConfigDialog(QDialog, Ui_Config_Dialog):
@@ -165,7 +176,7 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
 
     def getDict(self):
         conf = config()
-        info ={}
+        info = {}
         info['name'] = self.nameEdit.text()
         info['ip'] = self.ipEdit.text()
         info['port'] = self.portEdit.text()
@@ -184,13 +195,15 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.userEdit.setDisabled(True)
         self.passwordEdit.setDisabled(True)
 
+
 # 性能监控统一页面
-class simpleForm(QWidget,Ui_simple_Form):
+class simpleForm(QWidget, Ui_simple_Form):
     # 信号槽
     Downstop = pyqtSignal()
     stop = pyqtSignal()
     nameSignal = pyqtSignal()
     fileNameSignal = pyqtSignal()
+
     # 初始化
     def __init__(self):
         self.cpu_list = []
@@ -199,7 +212,7 @@ class simpleForm(QWidget,Ui_simple_Form):
         self.name = ''
         self.fileName = ''
         self.moveable = True
-        super(simpleForm,self).__init__()
+        super(simpleForm, self).__init__()
         self.setupUi(self)
         self.timer = QTimer(self)
         self.setWarnLine()
@@ -219,7 +232,7 @@ class simpleForm(QWidget,Ui_simple_Form):
     # 设置预警线
     def setWarnLine(self):
         conf = config()
-        self.CpuHLine.setPos(int(conf.getOption('sysconfig','cpuwarnline')))
+        self.CpuHLine.setPos(int(conf.getOption('sysconfig', 'cpuwarnline')))
         self.MemHLine.setPos(int(conf.getOption('sysconfig', 'memwarnline')))
         self.DiskHLine.setPos(int(conf.getOption('sysconfig', 'diskwarnline')))
 
@@ -243,7 +256,7 @@ class simpleForm(QWidget,Ui_simple_Form):
             conf = config()
             infos = conf.sentionAll(self.name)
             monitor = Monitor_server()
-            ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
+            ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'], conf.decrypt(infos['password']))
             nmon_checked = monitor.nmon_checked(ssh)
             if nmon_checked:
                 self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
@@ -262,7 +275,8 @@ class simpleForm(QWidget,Ui_simple_Form):
             conf = config()
             infos = conf.sentionAll(self.name)
             monitor = Monitor_server()
-            text = monitor.sftp_upload_file(infos['ip'], int(infos['port']), infos['user'],conf.decrypt(infos['password']))
+            text = monitor.sftp_upload_file(infos['ip'], int(infos['port']), infos['user'],
+                                            conf.decrypt(infos['password']))
             if text == '上传成功':
                 self.showMessage('文件已上传')
                 self.nmon_label.setText('当前服务器已安装nmon，可进行性能监控')
@@ -284,13 +298,14 @@ class simpleForm(QWidget,Ui_simple_Form):
                 conf = config()
                 infos = conf.sentionAll(self.name)
                 monitor = Monitor_server()
-                ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'], conf.decrypt(infos['password']))
+                ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],
+                                         conf.decrypt(infos['password']))
                 get_msgs = monitor.nmon_run(ssh, nmon_infos['name'], nmon_infos['time'], nmon_infos['tap'])
                 self.showMessage(get_msgs)
                 self.start_record.setDisabled(True)
-                self.record_name.setText(nmon_infos['name']+'.nmon')
-                self.fileName = nmon_infos['name']+'.nmon'
-                self.timer.start((int(nmon_infos['time'])*int(nmon_infos['tap'])+1)*1000)
+                self.record_name.setText(nmon_infos['name'] + '.nmon')
+                self.fileName = nmon_infos['name'] + '.nmon'
+                self.timer.start((int(nmon_infos['time']) * int(nmon_infos['tap']) + 1) * 1000)
             self.timerDialog.destroy()
         except Exception as e:
             self.showMessage(str(e))
@@ -342,13 +357,13 @@ class simpleForm(QWidget,Ui_simple_Form):
             self.moveable_btn.setText('自动')
         else:
             self.moveable_btn.setText('锁定')
-        self.moveable = bool(1-self.moveable)
+        self.moveable = bool(1 - self.moveable)
 
     # 绘制数据图形
-    def set_data(self,cpu,mem,dick):
+    def set_data(self, cpu, mem, dick):
         try:
             if len(self.cpu_list) > 13 and self.moveable == True:
-                self.graph_widget.setXRange(len(self.cpu_list)-13, len(self.cpu_list)+2, padding=0)
+                self.graph_widget.setXRange(len(self.cpu_list) - 13, len(self.cpu_list) + 2, padding=0)
             self.showMessage('采样正常')
             self.cpu_list.append(cpu)
             self.mem_list.append(mem)
@@ -370,11 +385,11 @@ class simpleForm(QWidget,Ui_simple_Form):
                 if self.graph_widget.sceneBoundingRect().contains(pos):
                     mousePoint = self.graph_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
                     index = int(mousePoint.x())  # 鼠标所处的X轴坐标
-                    if 0 <= index <= len(self.cpu_list)-1:
+                    if 0 <= index <= len(self.cpu_list) - 1:
                         # 在label中写入HTML
                         self.point_label.setHtml(
                             "<p style='color:white'>CPU：{0}%</p><p style='color:white'>内存：{1}%</p><p style='color:white'>磁盘：{2}%</p>".format(
-                            self.cpu_list[index], self.mem_list[index], self.disk_list[index]))
+                                self.cpu_list[index], self.mem_list[index], self.disk_list[index]))
                         self.point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.vLine.setPos(mousePoint.x())
@@ -387,6 +402,7 @@ class simpleForm(QWidget,Ui_simple_Form):
         self.info_borwser.append(msg)
         if "文件下载异常" in msg:
             self.visabledownloadChange()
+
 
 # 系统设置页面
 class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
@@ -412,7 +428,7 @@ class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
     # 保存系统配置
     def getDict(self):
         conf = config()
-        info ={}
+        info = {}
         info['cpuwarnline'] = str(self.CPU_spinBox.value())
         info['memwarnline'] = str(self.MEM_spinBox.value())
         info['diskwarnline'] = str(self.DISK_spinBox.value())
@@ -424,12 +440,14 @@ class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
+
 # 介绍页面
-class infoForm(QWidget,info_Form):
+class infoForm(QWidget, info_Form):
     # 初始化
     def __init__(self, parent=None):
         super(infoForm, self).__init__(parent)
         self.setupUi(self)
+
 
 # 帮助页面
 class userhelper(QWidget, User_helper):
@@ -438,8 +456,9 @@ class userhelper(QWidget, User_helper):
         super(userhelper, self).__init__(parent)
         self.setupUi(self)
 
+
 # nmon启动参数页面
-class timerDialog(QDialog,Ui_timer_Dialog):
+class timerDialog(QDialog, Ui_timer_Dialog):
     # 初始化
     def __init__(self, parent=None):
         super(timerDialog, self).__init__(parent)
@@ -452,12 +471,76 @@ class timerDialog(QDialog,Ui_timer_Dialog):
         infos['name'] = self.fileName_lineEdit.text()
         return infos
 
+
 # 分析页面
 class analysis_form(QWidget, Ui_nmonAnalysis_Form):
     # 初始化
     def __init__(self, parent=None):
         super(analysis_form, self).__init__(parent)
         self.setupUi(self)
+        self.cwd = os.getcwd()
+        self.cpu_user = []
+        self.cpu_sys = []
+        self.cpu_Idle = []
+        self.mem = []
+        self.disk_info = {}
+        self.iops = []
+        self.net_read = []
+        self.net_write = []
+        self.IOPS = []
+        self.len = 0
+
+    def loadfile(self, filePath):
+        try:
+            if filePath == '':
+                filePath, fileType = QFileDialog.getOpenFileName(self, "选取文件", "temp/", "nmon文件 (*.nmon);;所有文件 (*)")
+            if filePath == '':
+                self.close()
+                return
+            nmon = nmon_data_deal()
+            infos = nmon.file_read(filePath)
+            self.analysis(infos)
+            self.calculation(1, self.len)
+        except Exception as e:
+            self.Tips('nmon文件解析异常，请重试')
+            self.close()
+
+    def analysis(self, infos):
+        for cpu in infos['cpu']:
+            self.cpu_user.append(cpu[0])
+            self.cpu_sys.append(cpu[1])
+            self.cpu_Idle.append(cpu[2])
+        for mem in infos['mem']:
+            self.mem.append((mem[0] - mem[1] - mem[2] - mem[3]) / mem[0] * 100)
+        for net in infos['NET']:
+            self.net_read.append(net[0] / 128)
+            self.net_write.append(net[1] / 128)
+        self.disk_info['diskName'] = infos['diskName']
+        for diskName in infos['diskName']:
+            self.disk_info[diskName+'_DISKBUSY'] = infos[diskName+'_DISKBUSY']
+        self.iops = infos['DISKXFER']
+        self.len = infos['simpleNumber']
+
+
+    def calculation(self, start, end):
+        cpu_temp = 0
+        mem_temp = 0
+        net_temp = 0
+        count = 0
+        for i in range(start - 1, end):
+            cpu_temp += self.cpu_user[i] + self.cpu_sys[i]
+            mem_temp += self.mem[i]
+            net_temp += self.net_read[i] + self.net_write[i]
+        self.cpu_label.setText(str(round(cpu_temp / (end - start + 1), 2)) + '%')
+        self.men_label.setText(str(round(mem_temp / (end - start + 1), 2)) + '%')
+        # self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2)) + '%')
+        self.net_label.setText(str(round(net_temp / (end - start + 1), 2)) + 'Mbps')
+        # self.IOPS_label.setText(str(round(IOPS_temp / (end - start + 1), 2)) + '次')
+
+    # 提示窗口
+    def Tips(self, message):
+        QMessageBox.about(self, "提示", message)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
