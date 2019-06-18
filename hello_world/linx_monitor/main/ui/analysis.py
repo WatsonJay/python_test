@@ -261,7 +261,7 @@ class Ui_nmonAnalysis_Form(object):
 
     def retranslateUi(self, nmonAnalysis_Form):
         _translate = QtCore.QCoreApplication.translate
-        nmonAnalysis_Form.setWindowTitle(_translate("nmonAnalysis_Form", "Form"))
+        nmonAnalysis_Form.setWindowTitle(_translate("nmonAnalysis_Form", "nmon数据分析"))
         self.label.setText(_translate("nmonAnalysis_Form", "数据来源ip:"))
         self.label_2.setText(_translate("nmonAnalysis_Form", "数据来源文件："))
         self.label_3.setText(_translate("nmonAnalysis_Form", "采样数："))
