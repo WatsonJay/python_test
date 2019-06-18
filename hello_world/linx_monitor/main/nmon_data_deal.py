@@ -12,6 +12,7 @@ class nmon_data_deal:
         self.DISKXFER_For_deal = []
         self.MEM_For_deal = []
         self.NET_For_deal = []
+        self.net_top_temp = []
         self.network_name = ''
         self.ip = ''
         self.os = ''
@@ -22,6 +23,9 @@ class nmon_data_deal:
         file = open(path, 'r', encoding='UTF-8')
         line = file.readline()
         while line:
+            if 'NET,Network' in line:
+                data = re.sub('\n', '', line).split(',')
+                self.net_top_temp = data
             if 'DISKBUSY,Disk' in line:
                 data = re.sub('\n', '', line).split(',')
                 self.DISKName_For_deal = data[2:]
@@ -48,7 +52,7 @@ class nmon_data_deal:
                 self.MEM_For_deal.append(data_need)
             if 'NET,T' in line:
                 data = re.sub('\n', '', line).split(',')
-                data_need = [float(data[3]), float(data[-2])]
+                data_need = [float(data[self.net_top_temp.index(self.network_name+'-read-KB/s')]), float(data[self.net_top_temp.index(self.network_name+'-write-KB/s')])]
                 self.NET_For_deal.append(data_need)
             if ',ifconfig,"' in line and self.ip == '':
                 if len(re.findall('\,ifconfig\,\"(.+)\s\s\s\s\s\sLink', line)) != 0:
