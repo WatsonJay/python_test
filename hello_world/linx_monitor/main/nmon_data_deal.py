@@ -4,10 +4,11 @@
 # @Software: PyCharm
 import re
 
+
 class nmon_data_deal:
     def __init__(self):
         self.CPU_For_deal = []
-        self.DISKBUSY_For_deal = []
+        self.DISKName_For_deal = []
         self.DISKXFER_For_deal = []
         self.MEM_For_deal = []
         self.NET_For_deal = []
@@ -16,29 +17,38 @@ class nmon_data_deal:
         self.os = ''
         self.simpleNumber = 0
 
-    def file_read(self ,path):
+    def file_read(self, path):
+        info_Maps = {}
         file = open(path, 'r', encoding='UTF-8')
         line = file.readline()
         while line:
+            if 'DISKBUSY,Disk' in line:
+                data = re.sub('\n', '', line).split(',')
+                self.DISKName_For_deal = data[2:]
+                for temp in self.DISKName_For_deal:
+                    info_Maps[temp+'_DISKBUSY'] = []
+                info_Maps['DISKXFER'] = []
             if 'CPU_ALL,T' in line:
                 data = re.sub('\n', '', line).split(',')
-                data_need = [data[2],data[3],data[5]]
+                data_need = [float(data[2]), float(data[3]), float(data[5])]
                 self.CPU_For_deal.append(data_need)
             if 'DISKBUSY,T' in line:
                 data = re.sub('\n', '', line).split(',')
-                data_need = [ data[-6], data[-5], data[-4], data[-3], data[-2], data[-1]]
-                self.DISKBUSY_For_deal.append(data_need)
+                for i in range(len(self.DISKName_For_deal)):
+                    info_Maps[self.DISKName_For_deal[i]+'_DISKBUSY'].append(float(data[i+2]))
             if 'DISKXFER,T' in line:
                 data = re.sub('\n', '', line).split(',')
-                data_need = [data[-6], data[-5], data[-4], data[-3], data[-2], data[-1]]
-                self.DISKXFER_For_deal.append(data_need)
+                temp = 0.0
+                for i in range(len(self.DISKName_For_deal)):
+                    temp += float(data[i+2])
+                info_Maps['DISKXFER'].append(temp)
             if 'MEM,T' in line:
                 data = re.sub('\n', '', line).split(',')
-                data_need = [data[2], data[6], data[-6], data[-3]]
+                data_need = [float(data[2]), float(data[6]), float(data[-6]), float(data[-3])]
                 self.MEM_For_deal.append(data_need)
             if 'NET,T' in line:
                 data = re.sub('\n', '', line).split(',')
-                data_need = [data[3], data[-2]]
+                data_need = [float(data[3]), float(data[-2])]
                 self.NET_For_deal.append(data_need)
             if ',ifconfig,"' in line and self.ip == '':
                 if len(re.findall('\,ifconfig\,\"(.+)\s\s\s\s\s\sLink', line)) != 0:
@@ -55,17 +65,16 @@ class nmon_data_deal:
                 self.os = re.findall('AAA,OS\,(.+)\n', line)[0].strip()
             line = file.readline()
         file.close()
-        info_Maps = {}
         info_Maps['cpu'] = self.CPU_For_deal
-        info_Maps['diskBusy'] = self.DISKBUSY_For_deal
-        info_Maps['diskXfer'] = self.DISKXFER_For_deal
         info_Maps['mem'] = self.MEM_For_deal
         info_Maps['NET'] = self.NET_For_deal
+        info_Maps['diskName'] = self.DISKName_For_deal
         info_Maps['network_name'] = self.network_name
         info_Maps['ip'] = self.ip
         info_Maps['simpleNumber'] = self.simpleNumber
         info_Maps['os'] = self.os
         return info_Maps
+
 
 if __name__ == '__main__':
     test = nmon_data_deal()
