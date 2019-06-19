@@ -163,6 +163,7 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
+
 # 服务器配置页面
 class serverConfigDialog(QDialog, Ui_Config_Dialog):
     def __init__(self, parent=None):
@@ -197,6 +198,7 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.portEdit.setDisabled(True)
         self.userEdit.setDisabled(True)
         self.passwordEdit.setDisabled(True)
+
 
 # 性能监控统一页面
 class simpleForm(QWidget, Ui_simple_Form):
@@ -352,6 +354,7 @@ class simpleForm(QWidget, Ui_simple_Form):
     def analysis_show(self):
         self.analysisShow = analysis_form()
         self.analysisShow.show()
+        self.analysisShow.loadfile('temp/' + self.fileName)
 
     # 是否自动移动
     def moveType(self):
@@ -405,6 +408,7 @@ class simpleForm(QWidget, Ui_simple_Form):
         if "文件下载异常" in msg:
             self.visabledownloadChange()
 
+
 # 系统设置页面
 class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
     # 初始化
@@ -441,6 +445,7 @@ class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
+
 # 介绍页面
 class infoForm(QWidget, info_Form):
     # 初始化
@@ -448,12 +453,14 @@ class infoForm(QWidget, info_Form):
         super(infoForm, self).__init__(parent)
         self.setupUi(self)
 
+
 # 帮助页面
 class userhelper(QWidget, User_helper):
     # 初始化
     def __init__(self, parent=None):
         super(userhelper, self).__init__(parent)
         self.setupUi(self)
+
 
 # nmon启动参数页面
 class timerDialog(QDialog, Ui_timer_Dialog):
@@ -468,6 +475,7 @@ class timerDialog(QDialog, Ui_timer_Dialog):
         infos['tap'] = str(self.tap_spinBox.value())
         infos['name'] = self.fileName_lineEdit.text()
         return infos
+
 
 # 分析页面
 class analysis_form(QWidget, Ui_nmonAnalysis_Form):
@@ -579,6 +587,8 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             if temp1 != 0:
                 disk_temp += temp1
                 count += 1
+        if count == 0:
+            count = 1
         self.cpu_label.setText(str(round(cpu_temp / (end - start + 1), 2)) + '%')
         self.men_label.setText(str(round(mem_temp / (end - start + 1), 2)) + '%')
         self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2)) + '%')
