@@ -6,6 +6,9 @@ import os
 import sys
 import time
 
+import openpyxl as openpyxl
+from openpyxl.styles import Font
+from openpyxl.styles import PatternFill
 from PyQt5.QtCore import pyqtSignal, QTimer
 from PyQt5.QtWidgets import QApplication, QMainWindow, QDialog, QMessageBox, QWidget, QFileDialog
 from PyQt5 import QtWidgets
@@ -487,20 +490,25 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.iops = []
         self.net_read = []
         self.net_write = []
-        self.IOPS = []
         self.len = 0
+        self.pushButton_2.clicked.connect(self.calculation_again)
+        self.analysis_pushButton.clicked.connect(lambda: self.loadfile(''))
+        self.pushButton_4.clicked.connect(self.write07Excel)
+        self.move_slot = pg.SignalProxy(self.cpu_widget.scene().sigMouseMoved, rateLimit=60, slot=self.print_cpu_slot)
 
     def loadfile(self, filePath):
         try:
             if filePath == '':
                 filePath, fileType = QFileDialog.getOpenFileName(self, "选取文件", "temp/", "nmon文件 (*.nmon);;所有文件 (*)")
             if filePath == '':
-                self.close()
                 return
             nmon = nmon_data_deal()
             infos = nmon.file_read(filePath)
             self.analysis(infos)
             self.calculation(1, self.len)
+            self.fileName_lineEdit.setText(filePath)
+            self.simpleNum_label.setText(str(self.len) + '次')
+            self.UI_init()
         except Exception as e:
             self.Tips('nmon文件解析异常，请重试')
             self.close()
@@ -517,29 +525,106 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             self.net_write.append(net[1] / 128)
         self.disk_info['diskName'] = infos['diskName']
         for diskName in infos['diskName']:
-            self.disk_info[diskName+'_DISKBUSY'] = infos[diskName+'_DISKBUSY']
+            self.disk_info[diskName + '_DISKBUSY'] = infos[diskName + '_DISKBUSY']
         self.iops = infos['DISKXFER']
         self.len = infos['simpleNumber']
+        self.ip_lineEdit.setText(infos['ip'])
+        self.infoShow('当前系统版本：' + infos['os'])
 
+    def UI_init(self):
+        self.star_spinBox.setMinimum(1)
+        self.star_spinBox.setMaximum(self.len - 1)
+        self.end_spinBox.setMinimum(2)
+        self.end_spinBox.setMaximum(self.len)
+        self.end_spinBox.setValue(self.len)
+        self.cpu_user_line.setData(self.cpu_user)
+        self.cpu_sys_line.setData(self.cpu_sys)
+        self.cpu_idle_line.setData(self.cpu_Idle)
+        self.mem_line.setData(self.mem)
+        self.iops_line.setData(self.iops)
+        self.net_read_line.setData(self.net_read)
+        self.net_write_line.setData(self.net_write)
 
+    def calculation_again(self):
+        self.calculation(self.star_spinBox.value(), self.end_spinBox.value())
+
+    # 计算平均值
     def calculation(self, start, end):
         cpu_temp = 0
         mem_temp = 0
         net_temp = 0
+        IOPS_temp = 0
+        temp1 = 0
+        disk_temp = 0
         count = 0
         for i in range(start - 1, end):
             cpu_temp += self.cpu_user[i] + self.cpu_sys[i]
             mem_temp += self.mem[i]
             net_temp += self.net_read[i] + self.net_write[i]
+            IOPS_temp += self.iops[i]
+        for disk_name in self.disk_info['diskName']:
+            for i in range(start - 1, end):
+                temp1 += self.disk_info[disk_name + '_DISKBUSY'][i]
+            if temp1 != 0:
+                disk_temp += temp1
+                count += 1
         self.cpu_label.setText(str(round(cpu_temp / (end - start + 1), 2)) + '%')
         self.men_label.setText(str(round(mem_temp / (end - start + 1), 2)) + '%')
-        # self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2)) + '%')
+        self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2)) + '%')
         self.net_label.setText(str(round(net_temp / (end - start + 1), 2)) + 'Mbps')
-        # self.IOPS_label.setText(str(round(IOPS_temp / (end - start + 1), 2)) + '次')
+        self.IOPS_label.setText(str(round(IOPS_temp / (end - start + 1), 2)) + '次')
+
+    # 导出
+    def write07Excel(self):
+        try:
+            wb = openpyxl.Workbook()
+            sheet = wb.active
+            sheet.title = self.ip_lineEdit.text() + '统计表'
+            value = [[self.label_7.text(), self.label_9.text(), self.label_13.text(), self.label_11.text(),
+                      self.label_16.text()],
+                     [self.cpu_label.text(), self.men_label.text(), self.disk_label.text(), self.net_label.text(),
+                      self.IOPS_label.text()]]
+            for i in range(0, 2):
+                for j in range(0, len(value[i])):
+                    sheet.cell(row=i + 1, column=j + 1, value=str(value[i][j]))
+            filePath, ok2 = QFileDialog.getSaveFileName(self,
+                                                        "文件保存",
+                                                        "temp/",
+                                                        "Xlsx Files (*.xlsx);;All Files (*)")
+            wb.save(filePath)
+            self.Tips('写入数据成功！')
+        except Exception as e:
+            self.Tips('导出execl异常，请重试')
+
+    # 消息显示
+    def infoShow(self, msg):
+        self.textBrowser.append(msg)
 
     # 提示窗口
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
+
+    # 响应鼠标移动绘制光标
+    def print_cpu_slot(self, event=None):
+        if event is None:
+            print("事件为空")
+        else:
+            pos = event[0]  # 获取事件的鼠标位置
+            try:
+                # 如果鼠标位置在绘图部件中
+                if self.cpu_widget.sceneBoundingRect().contains(pos):
+                    mousePoint = self.cpu_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
+                    index = int(mousePoint.x())  # 鼠标所处的X轴坐标
+                    if 0 <= index < len(self.cpu_user):
+                        # 在label中写入HTML
+                        self.cpu_point_label.setHtml(
+                            "<p style='color:white'>CPU用户使用率：{0}%</p><p style='color:white'>CPU系统使用率：{1}%</p><p style='color:white'>CPU空闲率：{2}%</p>".format(
+                                self.cpu_user[index], self.cpu_sys[index], self.cpu_Idle[index]))
+                        self.cpu_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                        # 设置垂直线条和水平线条的位置组成十字光标
+                        self.cpu_vLine.setPos(mousePoint.x())
+            except Exception as e:
+                pass
 
 
 if __name__ == '__main__':
