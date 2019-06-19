@@ -7,6 +7,8 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+import pyqtgraph as pg
+
 
 class Ui_nmonAnalysis_Form(object):
     def setupUi(self, nmonAnalysis_Form):
@@ -214,16 +216,42 @@ class Ui_nmonAnalysis_Form(object):
         self.tab.setObjectName("tab")
         self.verticalLayout_4 = QtWidgets.QVBoxLayout(self.tab)
         self.verticalLayout_4.setObjectName("verticalLayout_4")
-        self.cpu_widget = QtWidgets.QWidget(self.tab)
-        self.cpu_widget.setObjectName("cpu_widget")
+        self.cpu_widget = pg.PlotWidget(self.tab)
+        self.cpu_widget.setMinimumSize(QtCore.QSize(300, 200))
+        self.cpu_widget.setObjectName("graph_widget")
+        self.cpu_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
+        self.cpu_widget.setLabel(axis='left', text='百分比(%)')  # 设置Y轴标签
+        self.cpu_widget.setYRange(0, 150) # 初始化Y轴显示范围
+        self.cpu_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
+        self.cpu_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
+        self.cpu_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示x
+        self.cpu_point_label = pg.TextItem()  # 创建一个文本项
+        self.cpu_widget.addItem(self.cpu_point_label)  # 在图形部件中添加文本项
+        self.cpu_user_line = self.cpu_widget.plot(pen="g", name="CPU用户使用率", symbolBrush="g")
+        self.cpu_sys_line = self.cpu_widget.plot(pen=(255,180,0), name="CPU系统使用率", symbolBrush=(255,180,0))
+        self.cpu_idle_line = self.cpu_widget.plot(pen=(0,249,255), name="CPU空闲率", symbolBrush=(0,249,255))
+        self.cpu_vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.cpu_widget.addItem(self.cpu_vLine, ignoreBounds=True)
         self.verticalLayout_4.addWidget(self.cpu_widget)
         self.tabWidget.addTab(self.tab, "")
         self.tab_2 = QtWidgets.QWidget()
         self.tab_2.setObjectName("tab_2")
         self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.tab_2)
         self.verticalLayout_5.setObjectName("verticalLayout_5")
-        self.mem_widget = QtWidgets.QWidget(self.tab_2)
-        self.mem_widget.setObjectName("mem_widget")
+        self.mem_widget = pg.PlotWidget(self.tab_2)
+        self.mem_widget.setMinimumSize(QtCore.QSize(300, 200))
+        self.mem_widget.setObjectName("graph_widget")
+        self.mem_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
+        self.mem_widget.setLabel(axis='left', text='百分比(%)')  # 设置Y轴标签
+        self.mem_widget.setYRange(0, 150) # 初始化Y轴显示范围
+        self.mem_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
+        self.mem_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
+        self.mem_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示x
+        self.point_label = pg.TextItem()  # 创建一个文本项
+        self.mem_widget.addItem(self.point_label)  # 在图形部件中添加文本项
+        self.mem_line = self.mem_widget.plot(pen="g", name="内存使用率", symbolBrush="g")
+        self.vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.mem_widget.addItem(self.vLine, ignoreBounds=True)
         self.verticalLayout_5.addWidget(self.mem_widget)
         self.tabWidget.addTab(self.tab_2, "")
         self.tab_3 = QtWidgets.QWidget()
@@ -238,16 +266,41 @@ class Ui_nmonAnalysis_Form(object):
         self.tab_4.setObjectName("tab_4")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.tab_4)
         self.verticalLayout_7.setObjectName("verticalLayout_7")
-        self.iops_widget = QtWidgets.QWidget(self.tab_4)
-        self.iops_widget.setObjectName("iops_widget")
+        self.iops_widget = pg.PlotWidget(self.tab_4)
+        self.iops_widget.setMinimumSize(QtCore.QSize(300, 200))
+        self.iops_widget.setObjectName("graph_widget")
+        self.iops_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
+        self.iops_widget.setLabel(axis='left', text='IO/sec')  # 设置Y轴标签
+        self.iops_widget.setYRange(0, 600) # 初始化Y轴显示范围
+        self.iops_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
+        self.iops_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
+        self.iops_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示x
+        self.point_label = pg.TextItem()  # 创建一个文本项
+        self.iops_widget.addItem(self.point_label)  # 在图形部件中添加文本项
+        self.iops_line = self.iops_widget.plot(pen=(228,164,255), name="磁盘IO/sec", symbolBrush=(228,164,255))
+        self.vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.iops_widget.addItem(self.vLine, ignoreBounds=True)
         self.verticalLayout_7.addWidget(self.iops_widget)
         self.tabWidget.addTab(self.tab_4, "")
         self.tab_5 = QtWidgets.QWidget()
         self.tab_5.setObjectName("tab_5")
         self.verticalLayout_8 = QtWidgets.QVBoxLayout(self.tab_5)
         self.verticalLayout_8.setObjectName("verticalLayout_8")
-        self.net_widget = QtWidgets.QWidget(self.tab_5)
-        self.net_widget.setObjectName("net_widget")
+        self.net_widget = pg.PlotWidget(self.tab_5)
+        self.net_widget.setMinimumSize(QtCore.QSize(300, 200))
+        self.net_widget.setObjectName("graph_widget")
+        self.net_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
+        self.net_widget.setLabel(axis='left', text='Mbps')  # 设置Y轴标签
+        self.net_widget.setYRange(0, 200) # 初始化Y轴显示范围
+        self.net_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
+        self.net_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
+        self.net_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示
+        self.point_label = pg.TextItem()  # 创建一个文本项
+        self.net_widget.addItem(self.point_label)  # 在图形部件中添加文本项
+        self.net_read_line = self.net_widget.plot(pen="r", name="网络-读", symbolBrush=(255,0,0))
+        self.net_write_line = self.net_widget.plot(pen="g", name="网络-写", symbolBrush=(0, 255, 0))
+        self.vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.net_widget.addItem(self.vLine, ignoreBounds=True)
         self.verticalLayout_8.addWidget(self.net_widget)
         self.tabWidget.addTab(self.tab_5, "")
         self.horizontalLayout_2.addWidget(self.tabWidget)
