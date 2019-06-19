@@ -247,19 +247,30 @@ class Ui_nmonAnalysis_Form(object):
         self.mem_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
         self.mem_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
         self.mem_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示x
-        self.point_label = pg.TextItem()  # 创建一个文本项
-        self.mem_widget.addItem(self.point_label)  # 在图形部件中添加文本项
+        self.mem_point_label = pg.TextItem()  # 创建一个文本项
+        self.mem_widget.addItem(self.mem_point_label)  # 在图形部件中添加文本项
         self.mem_line = self.mem_widget.plot(pen="g", name="内存使用率", symbolBrush="g")
-        self.vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
-        self.mem_widget.addItem(self.vLine, ignoreBounds=True)
+        self.mem_vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.mem_widget.addItem(self.mem_vLine, ignoreBounds=True)
         self.verticalLayout_5.addWidget(self.mem_widget)
         self.tabWidget.addTab(self.tab_2, "")
         self.tab_3 = QtWidgets.QWidget()
         self.tab_3.setObjectName("tab_3")
         self.verticalLayout_6 = QtWidgets.QVBoxLayout(self.tab_3)
         self.verticalLayout_6.setObjectName("verticalLayout_6")
-        self.disk_widget = QtWidgets.QWidget(self.tab_3)
-        self.disk_widget.setObjectName("disk_widget")
+        self.disk_widget = pg.PlotWidget(self.tab_3)
+        self.disk_widget.setMinimumSize(QtCore.QSize(300, 200))
+        self.disk_widget.setObjectName("graph_widget")
+        self.disk_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
+        self.disk_widget.setLabel(axis='left', text='使用率(%)')  # 设置Y轴标签
+        self.disk_widget.setYRange(0, 200) # 初始化Y轴显示范围
+        self.disk_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
+        self.disk_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
+        self.disk_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示
+        self.disk_point_label = pg.TextItem()  # 创建一个文本项
+        self.disk_widget.addItem(self.disk_point_label)  # 在图形部件中添加文本项
+        self.disk_vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.disk_widget.addItem(self.disk_vLine, ignoreBounds=True)
         self.verticalLayout_6.addWidget(self.disk_widget)
         self.tabWidget.addTab(self.tab_3, "")
         self.tab_4 = QtWidgets.QWidget()
@@ -275,11 +286,11 @@ class Ui_nmonAnalysis_Form(object):
         self.iops_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
         self.iops_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
         self.iops_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示x
-        self.point_label = pg.TextItem()  # 创建一个文本项
-        self.iops_widget.addItem(self.point_label)  # 在图形部件中添加文本项
+        self.iops_point_label = pg.TextItem()  # 创建一个文本项
+        self.iops_widget.addItem(self.iops_point_label)  # 在图形部件中添加文本项
         self.iops_line = self.iops_widget.plot(pen=(228,164,255), name="磁盘IO/sec", symbolBrush=(228,164,255))
-        self.vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
-        self.iops_widget.addItem(self.vLine, ignoreBounds=True)
+        self.iops_vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.iops_widget.addItem(self.iops_vLine, ignoreBounds=True)
         self.verticalLayout_7.addWidget(self.iops_widget)
         self.tabWidget.addTab(self.tab_4, "")
         self.tab_5 = QtWidgets.QWidget()
@@ -295,12 +306,12 @@ class Ui_nmonAnalysis_Form(object):
         self.net_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
         self.net_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
         self.net_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示
-        self.point_label = pg.TextItem()  # 创建一个文本项
-        self.net_widget.addItem(self.point_label)  # 在图形部件中添加文本项
+        self.net_point_label = pg.TextItem()  # 创建一个文本项
+        self.net_widget.addItem(self.net_point_label)  # 在图形部件中添加文本项
         self.net_read_line = self.net_widget.plot(pen="r", name="网络-读", symbolBrush=(255,0,0))
         self.net_write_line = self.net_widget.plot(pen="g", name="网络-写", symbolBrush=(0, 255, 0))
-        self.vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
-        self.net_widget.addItem(self.vLine, ignoreBounds=True)
+        self.net_vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
+        self.net_widget.addItem(self.net_vLine, ignoreBounds=True)
         self.verticalLayout_8.addWidget(self.net_widget)
         self.tabWidget.addTab(self.tab_5, "")
         self.horizontalLayout_2.addWidget(self.tabWidget)

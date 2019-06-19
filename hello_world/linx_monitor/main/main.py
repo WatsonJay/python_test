@@ -3,6 +3,7 @@
 # @File    : main.py
 # @Software: PyCharm
 import os
+import random
 import sys
 import time
 
@@ -162,7 +163,6 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
-
 # 服务器配置页面
 class serverConfigDialog(QDialog, Ui_Config_Dialog):
     def __init__(self, parent=None):
@@ -197,7 +197,6 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.portEdit.setDisabled(True)
         self.userEdit.setDisabled(True)
         self.passwordEdit.setDisabled(True)
-
 
 # 性能监控统一页面
 class simpleForm(QWidget, Ui_simple_Form):
@@ -406,7 +405,6 @@ class simpleForm(QWidget, Ui_simple_Form):
         if "文件下载异常" in msg:
             self.visabledownloadChange()
 
-
 # 系统设置页面
 class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
     # 初始化
@@ -443,7 +441,6 @@ class sysConfigDialog(QDialog, Ui_SysConfig_Dialog):
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
-
 # 介绍页面
 class infoForm(QWidget, info_Form):
     # 初始化
@@ -451,14 +448,12 @@ class infoForm(QWidget, info_Form):
         super(infoForm, self).__init__(parent)
         self.setupUi(self)
 
-
 # 帮助页面
 class userhelper(QWidget, User_helper):
     # 初始化
     def __init__(self, parent=None):
         super(userhelper, self).__init__(parent)
         self.setupUi(self)
-
 
 # nmon启动参数页面
 class timerDialog(QDialog, Ui_timer_Dialog):
@@ -474,13 +469,13 @@ class timerDialog(QDialog, Ui_timer_Dialog):
         infos['name'] = self.fileName_lineEdit.text()
         return infos
 
-
 # 分析页面
 class analysis_form(QWidget, Ui_nmonAnalysis_Form):
     # 初始化
     def __init__(self, parent=None):
         super(analysis_form, self).__init__(parent)
         self.setupUi(self)
+        self.prepare_list = locals()
         self.cwd = os.getcwd()
         self.cpu_user = []
         self.cpu_sys = []
@@ -494,7 +489,16 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.pushButton_2.clicked.connect(self.calculation_again)
         self.analysis_pushButton.clicked.connect(lambda: self.loadfile(''))
         self.pushButton_4.clicked.connect(self.write07Excel)
-        self.move_slot = pg.SignalProxy(self.cpu_widget.scene().sigMouseMoved, rateLimit=60, slot=self.print_cpu_slot)
+        self.cpu_move_slot = pg.SignalProxy(self.cpu_widget.scene().sigMouseMoved, rateLimit=60,
+                                            slot=self.print_cpu_slot)
+        self.mem_move_slot = pg.SignalProxy(self.mem_widget.scene().sigMouseMoved, rateLimit=60,
+                                            slot=self.print_mem_slot)
+        self.iops_move_slot = pg.SignalProxy(self.iops_widget.scene().sigMouseMoved, rateLimit=60,
+                                             slot=self.print_iops_slot)
+        self.net_move_slot = pg.SignalProxy(self.net_widget.scene().sigMouseMoved, rateLimit=60,
+                                            slot=self.print_net_slot)
+        self.disk_move_slot = pg.SignalProxy(self.disk_widget.scene().sigMouseMoved, rateLimit=60,
+                                             slot=self.print_disk_slot)
 
     def loadfile(self, filePath):
         try:
@@ -519,10 +523,10 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             self.cpu_sys.append(cpu[1])
             self.cpu_Idle.append(cpu[2])
         for mem in infos['mem']:
-            self.mem.append((mem[0] - mem[1] - mem[2] - mem[3]) / mem[0] * 100)
+            self.mem.append(round((mem[0] - mem[1] - mem[2] - mem[3]) / mem[0] * 100, 3))
         for net in infos['NET']:
-            self.net_read.append(net[0] / 128)
-            self.net_write.append(net[1] / 128)
+            self.net_read.append(round(net[0] / 128, 3))
+            self.net_write.append(round(net[1] / 128, 3))
         self.disk_info['diskName'] = infos['diskName']
         for diskName in infos['diskName']:
             self.disk_info[diskName + '_DISKBUSY'] = infos[diskName + '_DISKBUSY']
@@ -544,6 +548,13 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.iops_line.setData(self.iops)
         self.net_read_line.setData(self.net_read)
         self.net_write_line.setData(self.net_write)
+        for diskName in self.disk_info['diskName']:
+            r = random.randint(0, 255)
+            g = random.randint(0, 255)
+            b = random.randint(0, 255)
+            self.prepare_list[diskName + '_line'] = self.disk_widget.plot(pen=(r, g, b), name=diskName,
+                                                                          symbolBrush=(r, g, b))
+            self.prepare_list[diskName + '_line'].setData(self.disk_info[diskName + '_DISKBUSY'])
 
     def calculation_again(self):
         self.calculation(self.star_spinBox.value(), self.end_spinBox.value())
@@ -604,7 +615,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
-    # 响应鼠标移动绘制光标
+    # CPU光标
     def print_cpu_slot(self, event=None):
         if event is None:
             print("事件为空")
@@ -615,7 +626,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                 if self.cpu_widget.sceneBoundingRect().contains(pos):
                     mousePoint = self.cpu_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
                     index = int(mousePoint.x())  # 鼠标所处的X轴坐标
-                    if 0 <= index < len(self.cpu_user):
+                    if 0 <= index < self.len:
                         # 在label中写入HTML
                         self.cpu_point_label.setHtml(
                             "<p style='color:white'>CPU用户使用率：{0}%</p><p style='color:white'>CPU系统使用率：{1}%</p><p style='color:white'>CPU空闲率：{2}%</p>".format(
@@ -623,6 +634,96 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                         self.cpu_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.cpu_vLine.setPos(mousePoint.x())
+            except Exception as e:
+                pass
+
+    # mem光标
+    def print_mem_slot(self, event=None):
+        if event is None:
+            print("事件为空")
+        else:
+            pos = event[0]  # 获取事件的鼠标位置
+            try:
+                # 如果鼠标位置在绘图部件中
+                if self.mem_widget.sceneBoundingRect().contains(pos):
+                    mousePoint = self.mem_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
+                    index = int(mousePoint.x())  # 鼠标所处的X轴坐标
+                    if 0 <= index < len(self.mem):
+                        # 在label中写入HTML
+                        self.mem_point_label.setHtml(
+                            "<p style='color:white'>内存用户使用率：{}%</p>".format(
+                                self.mem[index]))
+                        self.mem_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                        # 设置垂直线条和水平线条的位置组成十字光标
+                        self.mem_vLine.setPos(mousePoint.x())
+            except Exception as e:
+                pass
+
+    # disk光标
+    def print_disk_slot(self, event=None):
+        if event is None:
+            print("事件为空")
+        else:
+            pos = event[0]  # 获取事件的鼠标位置
+            try:
+                # 如果鼠标位置在绘图部件中
+                if self.disk_widget.sceneBoundingRect().contains(pos):
+                    mousePoint = self.disk_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
+                    index = int(mousePoint.x())  # 鼠标所处的X轴坐标
+                    html = ""
+                    if 0 <= index < len(self.mem):
+                        for diskName in self.disk_info['diskName']:
+                            html += "<p style='color:white'>{0}使用率：{1}%</p>".format(diskName, self.disk_info[
+                                diskName + '_DISKBUSY'][index])
+                        # 在label中写入HTML
+                        self.disk_point_label.setHtml(html)
+                        self.disk_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                        # 设置垂直线条和水平线条的位置组成十字光标
+                        self.disk_vLine.setPos(mousePoint.x())
+            except Exception as e:
+                pass
+
+    # IOPS光标
+    def print_iops_slot(self, event=None):
+        if event is None:
+            print("事件为空")
+        else:
+            pos = event[0]  # 获取事件的鼠标位置
+            try:
+                # 如果鼠标位置在绘图部件中
+                if self.iops_widget.sceneBoundingRect().contains(pos):
+                    mousePoint = self.iops_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
+                    index = int(mousePoint.x())  # 鼠标所处的X轴坐标
+                    if 0 <= index < len(self.iops):
+                        # 在label中写入HTML
+                        self.iops_point_label.setHtml(
+                            "<p style='color:white'>IO/sec：{}次</p>".format(
+                                self.iops[index]))
+                        self.iops_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                        # 设置垂直线条和水平线条的位置组成十字光标
+                        self.iops_vLine.setPos(mousePoint.x())
+            except Exception as e:
+                pass
+
+    # NET光标
+    def print_net_slot(self, event=None):
+        if event is None:
+            print("事件为空")
+        else:
+            pos = event[0]  # 获取事件的鼠标位置
+            try:
+                # 如果鼠标位置在绘图部件中
+                if self.net_widget.sceneBoundingRect().contains(pos):
+                    mousePoint = self.net_widget.plotItem.vb.mapSceneToView(pos)  # 转换鼠标坐标
+                    index = int(mousePoint.x())  # 鼠标所处的X轴坐标
+                    if 0 <= index < len(self.net_read):
+                        # 在label中写入HTML
+                        self.net_point_label.setHtml(
+                            "<p style='color:white'>net-读：{0}次</p><p style='color:white'>net-写：{1}次</p>".format(
+                                self.net_read[index], self.net_write[index]))
+                        self.net_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
+                        # 设置垂直线条和水平线条的位置组成十字光标
+                        self.net_vLine.setPos(mousePoint.x())
             except Exception as e:
                 pass
 
