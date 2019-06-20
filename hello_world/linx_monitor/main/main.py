@@ -26,6 +26,8 @@ from hello_world.linx_monitor.main.ui.config import Ui_SysConfig_Dialog
 from hello_world.linx_monitor.main.ui.info import info_Form
 from hello_world.linx_monitor.main.ui.simple import Ui_simple_Form
 from hello_world.linx_monitor.main.ui.timer_Dialog import Ui_timer_Dialog
+from hello_world.linx_monitor.main.ui.totalRun import Ui_totalRun_Form
+from hello_world.linx_monitor.main.ui.totalanalysis import Ui_totanl_Form
 from hello_world.linx_monitor.main.ui.user_helper import User_helper
 from hello_world.linx_monitor.main.server_controller import Monitor_server
 
@@ -41,6 +43,8 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
         self.actioninfo.triggered.connect(self.infoShow)
         self.actionuse.triggered.connect(self.helperShow)
         self.actionnmon.triggered.connect(self.analysis_show)
+        self.actionnmon_2.triggered.connect(self.totalRunShow)
+        self.actiontoatalAnalysis.triggered.connect(self.totalAnalysisShow)
         self.serverAdd.clicked.connect(self.serverAdd_Open)
         self.serverModif.clicked.connect(self.serverModif_Open)
         self.serverDelete.clicked.connect(self.serverDel)
@@ -66,6 +70,18 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     def helperShow(self):
         self.helperShow = userhelper()
         self.helperShow.show()
+
+    # 打开批量运行窗口
+    def totalRunShow(self):
+        self.total_run_form = total_run_form()
+        self.total_run_form.exec_()
+        self.total_run_form.destroy()
+
+    # 打开批量分析窗口
+    def totalAnalysisShow(self):
+        self.total_analysis_form = total_analysis_form()
+        self.total_analysis_form.exec_()
+        self.total_analysis_form.destroy()
 
     # 打开系统设置窗口
     def sysConfigDialogShow(self):
@@ -108,16 +124,19 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
 
     # 打开删除服务器窗口
     def serverDel(self):
-        conf = config()
-        sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
-        msg = QMessageBox.question(self, "删除警告", "你确定删除吗？", QMessageBox.Yes | QMessageBox.No,
-                                   QMessageBox.No)  # 这里是固定格式，yes/no不能动
-        # 判断消息的返回值
-        if msg == QMessageBox.Yes:
-            conf.delSection(sention)
-        else:
-            return
-        self.loadConfig()
+        try:
+            conf = config()
+            sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
+            msg = QMessageBox.question(self, "删除警告", "你确定删除吗？", QMessageBox.Yes | QMessageBox.No,
+                                       QMessageBox.No)  # 这里是固定格式，yes/no不能动
+            # 判断消息的返回值
+            if msg == QMessageBox.Yes:
+                conf.delSection(sention)
+            else:
+                return
+            self.loadConfig()
+        except:
+            pass
 
     # 打开服务器监控窗口
     def showWidget(self):
@@ -351,6 +370,7 @@ class simpleForm(QWidget, Ui_simple_Form):
     def stopThread(self):
         self.stop.emit()
 
+    # 打开分析页
     def analysis_show(self):
         self.analysisShow = analysis_form()
         self.analysisShow.show()
@@ -586,14 +606,14 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             temp1 = 0
             for i in range(start - 1, end):
                 temp1 += self.disk_info[disk_name + '_DISKBUSY'][i]
-            if round(temp1/ (end - start + 1), 2) != 0.0:
+            if round(temp1 / (end - start + 1), 2) != 0.0:
                 disk_temp += temp1
                 count += 1
         if count == 0:
             count = 1
         self.cpu_label.setText(str(round(cpu_temp / (end - start + 1), 2)) + '%')
         self.men_label.setText(str(round(mem_temp / (end - start + 1), 2)) + '%')
-        self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2) ) + '%')
+        self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2)) + '%')
         self.net_label.setText(str(round(net_temp / (end - start + 1), 2)) + 'Mbps')
         self.IOPS_label.setText(str(round(IOPS_temp / (end - start + 1), 2)) + '次')
 
@@ -742,6 +762,49 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                 pass
 
 
+# 批量分析
+class total_run_form(QDialog, Ui_totalRun_Form):
+    # 初始化
+    def __init__(self, parent=None):
+        super(total_run_form, self).__init__(parent)
+        self.setupUi(self)
+
+
+# 批量运行
+class total_analysis_form(QDialog, Ui_totanl_Form):
+    # 初始化
+    def __init__(self, parent=None):
+        super(total_analysis_form, self).__init__(parent)
+        self.setupUi(self)
+        self.addFile_pushButton.clicked.connect(self.addFile)
+        self.remove_pushButton.clicked.connect(self.delFile)
+        self.analysis_pushButton.clicked.connect(self.totalanlysis)
+
+    #添加
+    def addFile(self):
+        filePath, fileType = QFileDialog.getOpenFileName(self, "选取文件", "temp/", "nmon文件 (*.nmon);;所有文件 (*)")
+        if filePath == '':
+            return
+        self.file_listWidget.addItem(filePath)
+
+    # 删除
+    def delFile(self):
+        try:
+            self.file_listWidget.takeItem(self.file_listWidget.currentRow())
+        except:
+            pass
+
+    #分析
+    def totalanlysis(self):
+        try:
+            for i in range(self.file_listWidget.count()):
+                file = self.file_listWidget.item(i).text()
+                self.analysisShow = analysis_form()
+                self.analysisShow.show()
+                self.analysisShow.loadfile(file)
+            self.close()
+        except:
+            pass
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = MyMainWindow()
