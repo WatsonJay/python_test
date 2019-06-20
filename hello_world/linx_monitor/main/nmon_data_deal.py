@@ -13,7 +13,7 @@ class nmon_data_deal:
         self.MEM_For_deal = []
         self.NET_For_deal = []
         self.net_top_temp = []
-        self.network_name = ''
+        self.network_name = {}
         self.ip = ''
         self.os = ''
         self.simpleNumber = 0
@@ -52,17 +52,21 @@ class nmon_data_deal:
                 self.MEM_For_deal.append(data_need)
             if 'NET,T' in line:
                 data = re.sub('\n', '', line).split(',')
-                data_need = [float(data[self.net_top_temp.index(self.network_name+'-read-KB/s')]), float(data[self.net_top_temp.index(self.network_name+'-write-KB/s')])]
+                data_need = [float(data[self.net_top_temp.index(self.network_name[templine]+'-read-KB/s')]), float(data[self.net_top_temp.index(self.network_name[templine]+'-write-KB/s')])]
                 self.NET_For_deal.append(data_need)
             if ',ifconfig,"' in line and self.ip == '':
-                if len(re.findall('\,ifconfig\,\"(.+)\s\s\s\s\s\sLink', line)) != 0:
-                    self.network_name = re.findall('\,ifconfig\,\"(.+)\s\s\s\s\s\sLink', line)[0].strip()
-                if len(re.findall('\,ifconfig\,\"(.+)\:\s', line)) != 0:
-                    self.network_name = re.findall('\,ifconfig\,\"(.+)\:\s', line)[0].strip()
-                if len(re.findall('inet\saddr\:(.+)\sBcast\:', line)) != 0:
-                    self.ip = re.findall('inet\saddr\:(.+)\sBcast\:', line)[0].strip()
-                if len(re.findall('inet\s(.+)\s\snetmask', line)) != 0:
-                    self.ip = re.findall('inet\s(.+)\s\snetmask', line)[0].strip()
+                if len(re.findall('\,ifconfig\,\"(.+)\s+Link', line)) != 0:
+                    tempponit = int(re.sub('\n', '', line).split(',')[1])
+                    self.network_name[str(int(tempponit)+1)] = re.findall('\,ifconfig\,\"(.+)\s+Link', line)[0].strip().replace(":0", "")
+                if len(re.findall('\,ifconfig\,\"(.+)\:\sflag', line)) != 0:
+                    tempponit = int(re.sub('\n', '', line).split(',')[1])
+                    self.network_name[str(int(tempponit)+1)] = re.findall('\,ifconfig\,\"(.+)\:\sflag', line)[0].strip().replace(":0", "")
+                if len(re.findall('inet\saddr\:((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\s.+\s\sMask:255.255.255.0', line)) != 0:
+                    self.ip = re.findall('inet\saddr\:((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\s.+\s\sMask:255.255.255.0', line)[0].strip()
+                    templine = re.sub('\n', '', line).split(',')[1]
+                if len(re.findall('inet\s((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\s.+netmask\s255.255.255.0', line)) != 0:
+                    self.ip = re.findall('inet\s((?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?))\s.+netmask\s255.255.255.0', line)[0].strip()
+                    templine = re.sub('\n', '', line).split(',')[1]
             if 'AAA,snapshots,' in line:
                 self.simpleNumber = int(re.findall('AAA,snapshots\,(.+)\n', line)[0].strip())
             if 'AAA,OS,' in line:
