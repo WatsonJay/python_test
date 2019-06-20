@@ -515,6 +515,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             if filePath == '':
                 return
             nmon = nmon_data_deal()
+            self.textBrowser.clear()
             infos = nmon.file_read(filePath)
             self.analysis(infos)
             self.calculation(1, self.len)
@@ -582,16 +583,17 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             net_temp += self.net_read[i] + self.net_write[i]
             IOPS_temp += self.iops[i]
         for disk_name in self.disk_info['diskName']:
+            temp1 = 0
             for i in range(start - 1, end):
                 temp1 += self.disk_info[disk_name + '_DISKBUSY'][i]
-            if temp1 != 0:
+            if round(temp1/ (end - start + 1), 2) != 0.0:
                 disk_temp += temp1
                 count += 1
         if count == 0:
             count = 1
         self.cpu_label.setText(str(round(cpu_temp / (end - start + 1), 2)) + '%')
         self.men_label.setText(str(round(mem_temp / (end - start + 1), 2)) + '%')
-        self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2)) + '%')
+        self.disk_label.setText(str(round(disk_temp / count / (end - start + 1), 2) ) + '%')
         self.net_label.setText(str(round(net_temp / (end - start + 1), 2)) + 'Mbps')
         self.IOPS_label.setText(str(round(IOPS_temp / (end - start + 1), 2)) + '次')
 
@@ -612,6 +614,8 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                                                         "文件保存",
                                                         "temp/",
                                                         "Xlsx Files (*.xlsx);;All Files (*)")
+            if filePath == '':
+                return
             wb.save(filePath)
             self.Tips('写入数据成功！')
         except Exception as e:
@@ -729,7 +733,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                     if 0 <= index < len(self.net_read):
                         # 在label中写入HTML
                         self.net_point_label.setHtml(
-                            "<p style='color:white'>net-读：{0}次</p><p style='color:white'>net-写：{1}次</p>".format(
+                            "<p style='color:white'>net-读：{0}Mbps</p><p style='color:white'>net-写：{1}Mbps</p>".format(
                                 self.net_read[index], self.net_write[index]))
                         self.net_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标

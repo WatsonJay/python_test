@@ -302,7 +302,7 @@ class Ui_nmonAnalysis_Form(object):
         self.net_widget.setObjectName("graph_widget")
         self.net_widget.showGrid(x=True, y=True, alpha=0.5)  # 显示图形网格
         self.net_widget.setLabel(axis='left', text='Mbps')  # 设置Y轴标签
-        self.net_widget.setYRange(0, 200) # 初始化Y轴显示范围
+        self.net_widget.setYRange(0, 50) # 初始化Y轴显示范围
         self.net_widget.setXRange(0, 25, padding=0) # 初始化X轴显示范围
         self.net_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
         self.net_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示
