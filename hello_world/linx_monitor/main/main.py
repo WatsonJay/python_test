@@ -819,17 +819,18 @@ class total_run_form(QDialog, Ui_password_Dialog):
     def unlock(self):
         conf = config()
         if self.password_lineEdit.text() == conf.decrypt(conf.getOption('sysconfig', 'password')):
-            win = MyMainWindow()
-            win.password = False
+            WindowShow.show()
             self.close()
         else:
             self.Tips("密码错误,请重试")
+            self.widget.setStyleSheet("border-image: url(:/icon/error_password.jpg);")
     # 提示窗口
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    win = MyMainWindow()
+    win = total_run_form()
     win.show()
+    WindowShow = MyMainWindow()
     sys.exit(app.exec_())
