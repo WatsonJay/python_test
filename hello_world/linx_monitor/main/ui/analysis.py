@@ -227,8 +227,7 @@ class Ui_nmonAnalysis_Form(object):
         self.cpu_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示x
         self.cpu_point_label = pg.TextItem()  # 创建一个文本项
         self.cpu_widget.addItem(self.cpu_point_label)  # 在图形部件中添加文本项
-        self.cpu_user_line = self.cpu_widget.plot(pen="g", name="CPU用户使用率", symbolBrush="g")
-        self.cpu_sys_line = self.cpu_widget.plot(pen=(255,180,0), name="CPU系统使用率", symbolBrush=(255,180,0))
+        self.cpu_user_line = self.cpu_widget.plot(pen="g", name="CPU使用率", symbolBrush="g")
         self.cpu_idle_line = self.cpu_widget.plot(pen=(0,249,255), name="CPU空闲率", symbolBrush=(0,249,255))
         self.cpu_vLine = pg.InfiniteLine(angle=90, movable=False, pen="w")
         self.cpu_widget.addItem(self.cpu_vLine, ignoreBounds=True)

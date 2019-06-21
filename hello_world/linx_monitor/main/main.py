@@ -33,6 +33,9 @@ from hello_world.linx_monitor.main.server_controller import Monitor_server
 
 
 # 主页面
+from ui.password_gui import Ui_password_Dialog
+
+
 class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     # 初始化
     def __init__(self, parent=None):
@@ -110,17 +113,20 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
 
     # 打开编辑服务器窗口
     def serverModif_Open(self):
-        conf = config()
-        self.serverConfigDialog = serverConfigDialog()
-        sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
-        info = conf.sentionAll(sention)
-        self.serverConfigDialog.setDict(info)
-        self.serverConfigDialog.disableName()
-        if self.serverConfigDialog.exec_():
-            infos = self.serverConfigDialog.getDict()
-            conf.cmdSection(infos['name'], infos)
-        self.serverConfigDialog.destroy()
-        self.loadConfig()
+        try:
+            conf = config()
+            self.serverConfigDialog = serverConfigDialog()
+            sention = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
+            info = conf.sentionAll(sention)
+            self.serverConfigDialog.setDict(info)
+            self.serverConfigDialog.disableName()
+            if self.serverConfigDialog.exec_():
+                infos = self.serverConfigDialog.getDict()
+                conf.cmdSection(infos['name'], infos)
+            self.serverConfigDialog.destroy()
+            self.loadConfig()
+        except:
+            pass
 
     # 打开删除服务器窗口
     def serverDel(self):
@@ -217,7 +223,6 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.portEdit.setDisabled(True)
         self.userEdit.setDisabled(True)
         self.passwordEdit.setDisabled(True)
-
 
 # 性能监控统一页面
 class simpleForm(QWidget, Ui_simple_Form):
@@ -506,7 +511,6 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.prepare_list = locals()
         self.cwd = os.getcwd()
         self.cpu_user = []
-        self.cpu_sys = []
         self.cpu_Idle = []
         self.mem = []
         self.disk_info = {}
@@ -548,8 +552,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
 
     def analysis(self, infos):
         for cpu in infos['cpu']:
-            self.cpu_user.append(cpu[0])
-            self.cpu_sys.append(cpu[1])
+            self.cpu_user.append(cpu[0]+cpu[1])
             self.cpu_Idle.append(cpu[2])
         for mem in infos['mem']:
             self.mem.append(round((mem[0] - mem[1] - mem[2] - mem[3]) / mem[0] * 100, 3))
@@ -571,7 +574,6 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.end_spinBox.setMaximum(self.len)
         self.end_spinBox.setValue(self.len)
         self.cpu_user_line.setData(self.cpu_user)
-        self.cpu_sys_line.setData(self.cpu_sys)
         self.cpu_idle_line.setData(self.cpu_Idle)
         self.mem_line.setData(self.mem)
         self.iops_line.setData(self.iops)
@@ -594,11 +596,10 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         mem_temp = 0
         net_temp = 0
         IOPS_temp = 0
-        temp1 = 0
         disk_temp = 0
         count = 0
         for i in range(start - 1, end):
-            cpu_temp += self.cpu_user[i] + self.cpu_sys[i]
+            cpu_temp += self.cpu_user[i]
             mem_temp += self.mem[i]
             net_temp += self.net_read[i] + self.net_write[i]
             IOPS_temp += self.iops[i]
@@ -663,8 +664,8 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                     if 0 <= index < self.len:
                         # 在label中写入HTML
                         self.cpu_point_label.setHtml(
-                            "<p style='color:white'>CPU用户使用率：{0}%</p><p style='color:white'>CPU系统使用率：{1}%</p><p style='color:white'>CPU空闲率：{2}%</p>".format(
-                                self.cpu_user[index], self.cpu_sys[index], self.cpu_Idle[index]))
+                            "<p style='color:yellow'>采样点：{0}</p><p style='color:white'>CPU使用率：{1}%</p><p style='color:white'>CPU空闲率：{2}%</p>".format(
+                                str(index + 1), self.cpu_user[index], self.cpu_Idle[index]))
                         self.cpu_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.cpu_vLine.setPos(mousePoint.x())
@@ -685,8 +686,8 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                     if 0 <= index < len(self.mem):
                         # 在label中写入HTML
                         self.mem_point_label.setHtml(
-                            "<p style='color:white'>内存用户使用率：{}%</p>".format(
-                                self.mem[index]))
+                            "<p style='color:yellow'>采样点：{0}</p><p style='color:white'>内存用户使用率：{1}%</p>".format(
+                                str(index + 1), self.mem[index]))
                         self.mem_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.mem_vLine.setPos(mousePoint.x())
@@ -706,6 +707,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                     index = int(mousePoint.x())  # 鼠标所处的X轴坐标
                     html = ""
                     if 0 <= index < len(self.mem):
+                        html = "<p style='color:yellow'>采样点：{}</p>".format(str(index + 1))
                         for diskName in self.disk_info['diskName']:
                             html += "<p style='color:white'>{0}使用率：{1}%</p>".format(diskName, self.disk_info[
                                 diskName + '_DISKBUSY'][index])
@@ -731,8 +733,8 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                     if 0 <= index < len(self.iops):
                         # 在label中写入HTML
                         self.iops_point_label.setHtml(
-                            "<p style='color:white'>IO/sec：{}次</p>".format(
-                                self.iops[index]))
+                            "<p style='color:yellow'>采样点：{0}</p><p style='color:white'>IO/sec：{1}次</p>".format(
+                                str(index + 1), self.iops[index]))
                         self.iops_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.iops_vLine.setPos(mousePoint.x())
@@ -753,8 +755,8 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                     if 0 <= index < len(self.net_read):
                         # 在label中写入HTML
                         self.net_point_label.setHtml(
-                            "<p style='color:white'>net-读：{0}Mbps</p><p style='color:white'>net-写：{1}Mbps</p>".format(
-                                self.net_read[index], self.net_write[index]))
+                            "<p style='color:yellow'>采样点：{0}</p><p style='color:white'>net-读：{1}Mbps</p><p style='color:white'>net-写：{2}Mbps</p>".format(
+                                str(index + 1), self.net_read[index], self.net_write[index]))
                         self.net_point_label.setPos(mousePoint.x(), mousePoint.y())  # 设置label的位置
                         # 设置垂直线条和水平线条的位置组成十字光标
                         self.net_vLine.setPos(mousePoint.x())
@@ -780,7 +782,7 @@ class total_analysis_form(QDialog, Ui_totanl_Form):
         self.remove_pushButton.clicked.connect(self.delFile)
         self.analysis_pushButton.clicked.connect(self.totalanlysis)
 
-    #添加
+    # 添加
     def addFile(self):
         filePath, fileType = QFileDialog.getOpenFileName(self, "选取文件", "temp/", "nmon文件 (*.nmon);;所有文件 (*)")
         if filePath == '':
@@ -794,7 +796,7 @@ class total_analysis_form(QDialog, Ui_totanl_Form):
         except:
             pass
 
-    #分析
+    # 分析
     def totalanlysis(self):
         try:
             for i in range(self.file_listWidget.count()):
@@ -805,6 +807,27 @@ class total_analysis_form(QDialog, Ui_totanl_Form):
             self.close()
         except:
             pass
+
+# 批量分析
+class total_run_form(QDialog, Ui_password_Dialog):
+    # 初始化
+    def __init__(self, parent=None):
+        super(total_run_form, self).__init__(parent)
+        self.setupUi(self)
+        self.unlock_pushButton.clicked.connect(self.unlock)
+
+    def unlock(self):
+        conf = config()
+        if self.password_lineEdit.text() == conf.decrypt(conf.getOption('sysconfig', 'password')):
+            win = MyMainWindow()
+            win.password = False
+            self.close()
+        else:
+            self.Tips("密码错误,请重试")
+    # 提示窗口
+    def Tips(self, message):
+        QMessageBox.about(self, "提示", message)
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = MyMainWindow()
