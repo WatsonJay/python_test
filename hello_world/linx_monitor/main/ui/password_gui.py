@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'password_gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created by: PyQt5 UI code generator 5.11.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -36,22 +36,25 @@ class Ui_password_Dialog(object):
         self.password_lineEdit.setObjectName("password_lineEdit")
         self.horizontalLayout.addWidget(self.password_lineEdit)
         self.verticalLayout.addLayout(self.horizontalLayout)
-        self.buttonBox = QtWidgets.QDialogButtonBox(password_Dialog)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Ok).setText('确定')
-        self.buttonBox.button(QtWidgets.QDialogButtonBox.Cancel).setText('取消')
-        self.verticalLayout.addWidget(self.buttonBox)
+        self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        self.unlock_pushButton = QtWidgets.QPushButton(password_Dialog)
+        self.unlock_pushButton.setObjectName("unlock_pushButton")
+        self.horizontalLayout_2.addWidget(self.unlock_pushButton)
+        self.pushButton = QtWidgets.QPushButton(password_Dialog)
+        self.pushButton.setObjectName("pushButton")
+        self.horizontalLayout_2.addWidget(self.pushButton)
+        self.verticalLayout.addLayout(self.horizontalLayout_2)
         self.verticalLayout.setStretch(0, 8)
 
         self.retranslateUi(password_Dialog)
-        self.buttonBox.accepted.connect(password_Dialog.accept)
-        self.buttonBox.rejected.connect(password_Dialog.reject)
+        self.pushButton.clicked.connect(password_Dialog.close)
         QtCore.QMetaObject.connectSlotsByName(password_Dialog)
 
     def retranslateUi(self, password_Dialog):
         _translate = QtCore.QCoreApplication.translate
         self.label.setText(_translate("password_Dialog", "密码:"))
+        self.unlock_pushButton.setText(_translate("password_Dialog", "解锁"))
+        self.pushButton.setText(_translate("password_Dialog", "关闭"))
 
 import hello_world.linx_monitor.main.ui.icons
