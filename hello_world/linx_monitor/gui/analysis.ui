@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>970</width>
+    <width>969</width>
     <height>516</height>
    </rect>
   </property>
@@ -128,9 +128,18 @@
            <widget class="QTextBrowser" name="textBrowser"/>
           </item>
           <item>
-           <layout class="QGridLayout" name="gridLayout_3" columnstretch="2,2,1">
-            <item row="0" column="0">
-             <widget class="QLabel" name="label_5">
+           <layout class="QGridLayout" name="gridLayout_3" columnstretch="0,0,0">
+            <item row="0" column="1">
+             <widget class="QSpinBox" name="star_spinBox">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+               </font>
+              </property>
+             </widget>
+            </item>
+            <item row="6" column="1">
+             <widget class="QLabel" name="disk_label">
               <property name="font">
                <font>
                 <family>微软雅黑</family>
@@ -138,7 +147,7 @@
                </font>
               </property>
               <property name="text">
-               <string>开始采样点：</string>
+               <string/>
               </property>
              </widget>
             </item>
@@ -155,20 +164,7 @@
               </property>
              </widget>
             </item>
-            <item row="4" column="0">
-             <widget class="QLabel" name="label_11">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <pointsize>9</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>网络吞吐量(mbps):</string>
-              </property>
-             </widget>
-            </item>
-            <item row="5" column="0">
+            <item row="6" column="0">
              <widget class="QLabel" name="label_13">
               <property name="font">
                <font>
@@ -181,16 +177,7 @@
               </property>
              </widget>
             </item>
-            <item row="0" column="1">
-             <widget class="QSpinBox" name="star_spinBox">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="0">
+            <item row="7" column="0">
              <widget class="QLabel" name="label_16">
               <property name="font">
                <font>
@@ -203,20 +190,7 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="0">
-             <widget class="QLabel" name="label_9">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <pointsize>9</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>内存使用率(%):</string>
-              </property>
-             </widget>
-            </item>
-            <item row="2" column="1">
+            <item row="3" column="1">
              <widget class="QLabel" name="cpu_label">
               <property name="font">
                <font>
@@ -229,8 +203,8 @@
               </property>
              </widget>
             </item>
-            <item row="3" column="1">
-             <widget class="QLabel" name="men_label">
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_5">
               <property name="font">
                <font>
                 <family>微软雅黑</family>
@@ -238,59 +212,11 @@
                </font>
               </property>
               <property name="text">
-               <string/>
+               <string>开始采样点：</string>
               </property>
              </widget>
             </item>
-            <item row="1" column="1">
-             <widget class="QSpinBox" name="end_spinBox">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-               </font>
-              </property>
-             </widget>
-            </item>
-            <item row="0" column="2">
-             <widget class="QPushButton" name="pushButton_2">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <pointsize>9</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>数据刷新</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="2">
-             <widget class="QPushButton" name="pushButton_4">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <pointsize>9</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string>导出</string>
-              </property>
-             </widget>
-            </item>
-            <item row="4" column="1">
-             <widget class="QLabel" name="net_label">
-              <property name="font">
-               <font>
-                <family>微软雅黑</family>
-                <pointsize>9</pointsize>
-               </font>
-              </property>
-              <property name="text">
-               <string/>
-              </property>
-             </widget>
-            </item>
-            <item row="6" column="1">
+            <item row="7" column="1">
              <widget class="QLabel" name="IOPS_label">
               <property name="font">
                <font>
@@ -303,8 +229,8 @@
               </property>
              </widget>
             </item>
-            <item row="5" column="1">
-             <widget class="QLabel" name="disk_label">
+            <item row="4" column="1">
+             <widget class="QLabel" name="men_label">
               <property name="font">
                <font>
                 <family>微软雅黑</family>
@@ -316,7 +242,33 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
+            <item row="5" column="0">
+             <widget class="QLabel" name="label_11">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>网络吞吐量(mbps):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="5" column="1">
+             <widget class="QLabel" name="net_label">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="0">
              <widget class="QLabel" name="label_7">
               <property name="font">
                <font>
@@ -326,6 +278,85 @@
               </property>
               <property name="text">
                <string>CPU使用率(%):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSpinBox" name="end_spinBox">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+               </font>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="0">
+             <widget class="QLabel" name="label_9">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>内存使用率(%):</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QPushButton" name="moveStart_pushButton">
+              <property name="text">
+               <string>移至开始点</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="2">
+             <widget class="QPushButton" name="moveEnd_pushButton">
+              <property name="text">
+               <string>移至结束点</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="2">
+             <widget class="QPushButton" name="reset_pushButton">
+              <property name="text">
+               <string>图像重置</string>
+              </property>
+             </widget>
+            </item>
+            <item row="3" column="2">
+             <widget class="QPushButton" name="pushButton_2">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>重新计算</string>
+              </property>
+             </widget>
+            </item>
+            <item row="4" column="2">
+             <widget class="QPushButton" name="pushButton_4">
+              <property name="font">
+               <font>
+                <family>微软雅黑</family>
+                <pointsize>9</pointsize>
+               </font>
+              </property>
+              <property name="text">
+               <string>导出</string>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="label_4">
+              <property name="text">
+               <string>区间内统计数据</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
               </property>
              </widget>
             </item>

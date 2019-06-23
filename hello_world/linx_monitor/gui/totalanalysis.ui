@@ -42,6 +42,13 @@
      </property>
     </widget>
    </item>
+   <item>
+    <widget class="QPushButton" name="save_pushButton">
+     <property name="text">
+      <string>合并保存</string>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

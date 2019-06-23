@@ -29,6 +29,9 @@ class Ui_totanl_Form(object):
         self.analysis_pushButton = QtWidgets.QPushButton(Form)
         self.analysis_pushButton.setObjectName("analysis_pushButton")
         self.verticalLayout.addWidget(self.analysis_pushButton)
+        self.save_pushButton = QtWidgets.QPushButton(Form)
+        self.save_pushButton.setObjectName("save_pushButton")
+        self.verticalLayout.addWidget(self.save_pushButton)
 
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
@@ -39,4 +42,5 @@ class Ui_totanl_Form(object):
         self.addFile_pushButton.setText(_translate("Form", "添加文件..."))
         self.remove_pushButton.setText(_translate("Form", "删除选中"))
         self.analysis_pushButton.setText(_translate("Form", "开始分析"))
+        self.save_pushButton.setText(_translate("Form", "合并保存"))
 
