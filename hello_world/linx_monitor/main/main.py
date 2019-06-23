@@ -19,6 +19,7 @@ from hello_world.linx_monitor.main.DownloadThread import DownloadThread
 from hello_world.linx_monitor.main.config.config import config
 from hello_world.linx_monitor.main.nmon_data_deal import nmon_data_deal
 from hello_world.linx_monitor.main.threadClass import Thread
+from hello_world.linx_monitor.main.totalDownload import TotalDownloadThread
 from hello_world.linx_monitor.main.ui.Config_Dialog import Ui_Config_Dialog
 from hello_world.linx_monitor.main.ui.MonitorWindow import Ui_Monitor_Window
 from hello_world.linx_monitor.main.ui.analysis import Ui_nmonAnalysis_Form
@@ -30,10 +31,7 @@ from hello_world.linx_monitor.main.ui.totalRun import Ui_totalRun_Form
 from hello_world.linx_monitor.main.ui.totalanalysis import Ui_totanl_Form
 from hello_world.linx_monitor.main.ui.user_helper import User_helper
 from hello_world.linx_monitor.main.server_controller import Monitor_server
-
-
-# 主页面
-from ui.password_gui import Ui_password_Dialog
+from hello_world.linx_monitor.main.ui.password_gui import Ui_password_Dialog
 
 
 class MyMainWindow(QMainWindow, Ui_Monitor_Window):
@@ -77,14 +75,12 @@ class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     # 打开批量运行窗口
     def totalRunShow(self):
         self.total_run_form = total_run_form()
-        self.total_run_form.exec_()
-        self.total_run_form.destroy()
+        self.total_run_form.show()
 
     # 打开批量分析窗口
     def totalAnalysisShow(self):
         self.total_analysis_form = total_analysis_form()
-        self.total_analysis_form.exec_()
-        self.total_analysis_form.destroy()
+        self.total_analysis_form.show()
 
     # 打开系统设置窗口
     def sysConfigDialogShow(self):
@@ -223,6 +219,7 @@ class serverConfigDialog(QDialog, Ui_Config_Dialog):
         self.portEdit.setDisabled(True)
         self.userEdit.setDisabled(True)
         self.passwordEdit.setDisabled(True)
+
 
 # 性能监控统一页面
 class simpleForm(QWidget, Ui_simple_Form):
@@ -521,6 +518,9 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.pushButton_2.clicked.connect(self.calculation_again)
         self.analysis_pushButton.clicked.connect(lambda: self.loadfile(''))
         self.pushButton_4.clicked.connect(self.write07Excel)
+        self.moveStart_pushButton.clicked.connect(self.moveToStart)
+        self.moveEnd_pushButton.clicked.connect(self.moveToEnd)
+        self.reset_pushButton.clicked.connect(self.moveRestart)
         self.cpu_move_slot = pg.SignalProxy(self.cpu_widget.scene().sigMouseMoved, rateLimit=60,
                                             slot=self.print_cpu_slot)
         self.mem_move_slot = pg.SignalProxy(self.mem_widget.scene().sigMouseMoved, rateLimit=60,
@@ -532,6 +532,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.disk_move_slot = pg.SignalProxy(self.disk_widget.scene().sigMouseMoved, rateLimit=60,
                                              slot=self.print_disk_slot)
 
+    # 加载数据
     def loadfile(self, filePath):
         try:
             if filePath == '':
@@ -550,9 +551,10 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             self.Tips('nmon文件解析异常，请重试')
             self.close()
 
+    # 初始化处理
     def analysis(self, infos):
         for cpu in infos['cpu']:
-            self.cpu_user.append(cpu[0]+cpu[1])
+            self.cpu_user.append(cpu[0] + cpu[1])
             self.cpu_Idle.append(cpu[2])
         for mem in infos['mem']:
             self.mem.append(round((mem[0] - mem[1] - mem[2] - mem[3]) / mem[0] * 100, 3))
@@ -586,6 +588,22 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
             self.prepare_list[diskName + '_line'] = self.disk_widget.plot(pen=(r, g, b), name=diskName,
                                                                           symbolBrush=(r, g, b))
             self.prepare_list[diskName + '_line'].setData(self.disk_info[diskName + '_DISKBUSY'])
+
+    def moveGraph(self, start, end):
+        self.cpu_widget.setXRange(start, end, padding=0)  # 初始化X轴显示范围
+        self.mem_widget.setXRange(start, end, padding=0)  # 初始化X轴显示范围
+        self.disk_widget.setXRange(start, end, padding=0)  # 初始化X轴显示范围
+        self.iops_widget.setXRange(start, end, padding=0)  # 初始化X轴显示范围
+        self.net_widget.setXRange(start, end, padding=0)  # 初始化X轴显示范围
+
+    def moveToStart(self):
+        self.moveGraph(self.star_spinBox.value() - 5, self.star_spinBox.value() + 20)
+
+    def moveToEnd(self):
+        self.moveGraph(self.end_spinBox.value() - 5, self.end_spinBox.value() + 20)
+
+    def moveRestart(self):
+        self.moveGraph(0, 25)
 
     def calculation_again(self):
         self.calculation(self.star_spinBox.value(), self.end_spinBox.value())
@@ -764,20 +782,148 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
                 pass
 
 
-# 批量分析
-class total_run_form(QDialog, Ui_totalRun_Form):
+# 批量运行
+class total_run_form(QWidget, Ui_totalRun_Form):
+    Downstop = pyqtSignal()
+    stop = pyqtSignal()
+    nameSignal = pyqtSignal()
+    fileNameSignal = pyqtSignal()
+
     # 初始化
     def __init__(self, parent=None):
         super(total_run_form, self).__init__(parent)
+        self.simplePages = locals()
         self.setupUi(self)
+        self.loadConfig()
+        self.download_pushButton.setDisabled(True)
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.nmon_finished)
+        self.add_pushButton.clicked.connect(self.addserver)
+        self.remove_pushButton.clicked.connect(self.deladded)
+        self.start_pushButton.clicked.connect(self.totalrun)
+        self.download_pushButton.clicked.connect(self.nmon_download)
+
+    # 读取系统配置
+    def loadConfig(self):
+        try:
+            conf = config()
+            SentionList = conf.getSection()
+            self.server_listWidget.clear()
+            self.server_listWidget.addItems(SentionList)
+        except Exception as e:
+            self.Tips("配置文件出现异常，请重置配置文件")
+
+    # 添加批处理服务器
+    def addserver(self):
+        text = self.server_listWidget.item(self.server_listWidget.currentRow()).text()
+        exist = False
+        for i in range(self.added_listWidget.count()):
+            if text == self.added_listWidget.item(i).text():
+                exist = True
+        if exist == False:
+            self.added_listWidget.addItem(text)
+
+    # 删除批处理服务器
+    def deladded(self):
+        try:
+            self.added_listWidget.takeItem(self.added_listWidget.currentRow())
+        except:
+            pass
+
+    # 服务器批处理nmon
+    def totalrun(self):
+        try:
+            conf = config()
+            self.remove_pushButton.setDisabled(True)
+            self.add_pushButton.setDisabled(True)
+            self.tap_spinBox.setDisabled(True)
+            self.time_spinBox.setDisabled(True)
+            self.groupName_lineEdit.setDisabled(True)
+            self.start_pushButton.setDisabled(True)
+            for i in range(self.added_listWidget.count()):
+                sention = self.added_listWidget.item(i).text()
+                infos = conf.sentionAll(sention)
+                monitor = Monitor_server()
+                ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],
+                                         conf.decrypt(infos['password']))
+                if monitor.nmon_checked(ssh) == False:
+                    text = monitor.sftp_upload_file(infos['ip'], int(infos['port']), infos['user'],
+                                                    conf.decrypt(infos['password']))
+                get_msgs = monitor.nmon_run(ssh, self.groupName_lineEdit.text() + str(i),
+                                            str(self.time_spinBox.value()),
+                                            str(self.tap_spinBox.value()))
+                if get_msgs != '启动运行,请稍后':
+                    self.Tips('批量启动异常，请检查服务器配置，并重试')
+                    self.remove_pushButton.setDisabled(False)
+                    self.add_pushButton.setDisabled(False)
+                    self.tap_spinBox.setDisabled(False)
+                    self.time_spinBox.setDisabled(False)
+                    self.groupName_lineEdit.setDisabled(False)
+                    self.start_pushButton.setDisabled(False)
+                monitor.sshClose(ssh)
+            self.timer.start((self.time_spinBox.value() * self.tap_spinBox.value() + 1) * 1000)
+            self.Tips('已启动nmon,请稍候')
+            self.totalFile_label.setText(str(self.added_listWidget.count()))
+        except Exception as e:
+            self.Tips(str(e))
+            self.remove_pushButton.setDisabled(False)
+            self.add_pushButton.setDisabled(False)
+            self.tap_spinBox.setDisabled(False)
+            self.time_spinBox.setDisabled(False)
+            self.groupName_lineEdit.setDisabled(False)
+            self.start_pushButton.setDisabled(False)
+
+    # 返回nmon记录
+    def nmon_finished(self):
+        self.download_pushButton.setDisabled(False)
+        self.Tips('nmon运行结束,可进行下载')
+        self.timer.stop()
+
+    # 下载nmon记录
+    def nmon_download(self):
+        try:
+            serverList = []
+            self.successFile_label.setText(str(0))
+            self.failFile_label.setText(str(0))
+            for i in range(self.added_listWidget.count()):
+                serverList.append(self.added_listWidget.item(i).text())
+            self.DownloadThread = TotalDownloadThread()
+            self.nameSignal.connect(lambda: self.DownloadThread.getInfos(serverList))
+            self.fileNameSignal.connect(lambda: self.DownloadThread.getfileName(self.groupName_lineEdit.text()))
+            self.Downstop.connect(self.DownloadThread.__del__)
+            self.DownloadThread.sendDownMsgSignal.connect(self.showDown)
+            self.nameSignal.emit()
+            self.fileNameSignal.emit()
+            self.DownloadThread.start()
+        except Exception as e:
+            self.Tips(str(e))
+
+    # 下载文件数
+    def showDown(self, text, value):
+        if text == 'success':
+            self.successFile_label.setText(str(int(self.successFile_label.text()) + 1))
+        else:
+            self.failFile_label.setText(str(int(self.failFile_label.text()) + 1))
+        self.progressBar.setValue(value)
+        if value == 100:
+            self.Tips('下载完成')
+            self.Downstop.emit()
 
 
-# 批量运行
-class total_analysis_form(QDialog, Ui_totanl_Form):
+    # 提示窗口
+    def Tips(self, message):
+        QMessageBox.about(self, "提示", message)
+
+
+# 批量分析
+class total_analysis_form(QWidget, Ui_totanl_Form):
     # 初始化
     def __init__(self, parent=None):
         super(total_analysis_form, self).__init__(parent)
         self.setupUi(self)
+        self.analysisPage = locals()
+        self.save_pushButton.setDisabled(True)
+        self.save_pushButton.clicked.connect(self.totalsave)
         self.addFile_pushButton.clicked.connect(self.addFile)
         self.remove_pushButton.clicked.connect(self.delFile)
         self.analysis_pushButton.clicked.connect(self.totalanlysis)
@@ -801,18 +947,59 @@ class total_analysis_form(QDialog, Ui_totanl_Form):
         try:
             for i in range(self.file_listWidget.count()):
                 file = self.file_listWidget.item(i).text()
-                self.analysisShow = analysis_form()
-                self.analysisShow.show()
-                self.analysisShow.loadfile(file)
-            self.close()
+                self.analysisPage['totalAnalysis' + str(i)] = analysis_form()
+                self.analysisPage['totalAnalysis' + str(i)].show()
+                self.analysisPage['totalAnalysis' + str(i)].loadfile(file)
+            self.save_pushButton.setDisabled(False)
+            self.analysis_pushButton.setDisabled(True)
         except:
             pass
 
-# 批量分析
-class total_run_form(QDialog, Ui_password_Dialog):
+    # 批量保存
+    def totalsave(self):
+        try:
+            wb = openpyxl.Workbook()
+            for i in range(self.file_listWidget.count()):
+                self.analysisPage['totalAnalysis' + str(i)].calculation_again()
+                if i == 0:
+                    sheet = wb.active
+                    sheet.title = self.analysisPage['totalAnalysis' + str(i)].ip_lineEdit.text() + '统计表'
+                else:
+                    sheet = wb.create_sheet(self.analysisPage['totalAnalysis' + str(i)].ip_lineEdit.text() + '统计表')
+                value = [[self.analysisPage['totalAnalysis' + str(i)].label_7.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].label_9.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].label_13.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].label_11.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].label_16.text()],
+                         [self.analysisPage['totalAnalysis' + str(i)].cpu_label.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].men_label.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].disk_label.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].net_label.text(),
+                          self.analysisPage['totalAnalysis' + str(i)].IOPS_label.text()]]
+                for i in range(0, 2):
+                    for j in range(0, len(value[i])):
+                        sheet.cell(row=i + 1, column=j + 1, value=str(value[i][j]))
+            filePath, ok2 = QFileDialog.getSaveFileName(self,
+                                                        "文件保存",
+                                                        "temp/",
+                                                        "Xlsx Files (*.xlsx);;All Files (*)")
+            if filePath == '':
+                return
+            wb.save(filePath)
+            self.Tips('写入数据成功！')
+        except Exception as e:
+            self.Tips('导出execl异常，请重试')
+
+    # 提示窗口
+    def Tips(self, message):
+        QMessageBox.about(self, "提示", message)
+
+
+# 密码页面
+class password_form(QDialog, Ui_password_Dialog):
     # 初始化
     def __init__(self, parent=None):
-        super(total_run_form, self).__init__(parent)
+        super(password_form, self).__init__(parent)
         self.setupUi(self)
         self.unlock_pushButton.clicked.connect(self.unlock)
 
@@ -824,13 +1011,15 @@ class total_run_form(QDialog, Ui_password_Dialog):
         else:
             self.Tips("密码错误,请重试")
             self.widget.setStyleSheet("border-image: url(:/icon/error_password.jpg);")
+
     # 提示窗口
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
 
+
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    win = total_run_form()
-    win.show()
+    win = password_form()
     WindowShow = MyMainWindow()
+    WindowShow.show()
     sys.exit(app.exec_())
