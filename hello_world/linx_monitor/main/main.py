@@ -930,10 +930,11 @@ class total_analysis_form(QWidget, Ui_totanl_Form):
 
     # 添加
     def addFile(self):
-        filePath, fileType = QFileDialog.getOpenFileName(self, "选取文件", "temp/", "nmon文件 (*.nmon);;所有文件 (*)")
-        if filePath == '':
+        filePaths, fileType = QFileDialog.getOpenFileNames(self, "选取文件", "temp/", "nmon文件 (*.nmon);;所有文件 (*)")
+        if len(filePaths) == 0:
             return
-        self.file_listWidget.addItem(filePath)
+        for filePath in filePaths:
+            self.file_listWidget.addItem(filePath)
 
     # 删除
     def delFile(self):
