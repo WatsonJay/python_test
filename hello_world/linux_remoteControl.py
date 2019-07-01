@@ -122,6 +122,18 @@ class Monitor_server:
         except Exception as e:
             return e
 
+    def nmon_show(self, sshClient):
+        try:
+            command = 'ps -ef|grep "/home/monitor/monitor_used -s 1 -c 120 -F test.nmon "'
+            get_msgs = self.sshExecCmd(sshClient, command)
+            for msg in get_msgs:
+                if len(re.findall('root\s+(\d+)\s+', msg)) != 0:
+                    command = 'kill -9 '+re.findall('root\s+(\d+)\s+', msg)[0]
+                    get_msgs1 = self.sshExecCmd(sshClient, command)
+            return get_msgs
+        except Exception as e:
+            return e
+
     def callback(self, current, total):
         print("下载了{}".format(round(current/total*100, 2)))
 
@@ -138,6 +150,7 @@ if __name__ == '__main__':
     nmon_checked = moni.nmon_checked(test_sshConnect)
     text = moni.sftp_upload_file(hostname, port, username, password)
     get_msgs = moni.nmon_run(test_sshConnect)
+    get_msgs = moni.nmon_show(test_sshConnect)
     moni.sftp_download_file(hostname, port, username, password)
     print(cpu_info)
     print(Mem_info)

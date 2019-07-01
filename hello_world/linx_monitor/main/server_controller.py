@@ -111,3 +111,15 @@ class Monitor_server:
             return '上传成功'
         except Exception as e:
             return e
+
+    def nmon_cancel(self, sshClient, name, time, tap):
+        try:
+            command = 'ps -ef|grep "/home/monitor/monitor_used -s '+time+' -c '+tap+' -F '+name+'.nmon "'
+            get_msgs = self.sshExecCmd(sshClient, command)
+            for msg in get_msgs:
+                if len(re.findall('root\s+(\d+)\s+', msg)) != 0:
+                    command = 'kill -9 '+re.findall('root\s+(\d+)\s+', msg)[0]
+                    get_msgs1 = self.sshExecCmd(sshClient, command)
+            return '取消成功'
+        except Exception as e:
+            return e
