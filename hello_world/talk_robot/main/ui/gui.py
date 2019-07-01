@@ -112,7 +112,7 @@ class Ui_MainWindow(object):
         self.auto_reply.setText(_translate("MainWindow", "开启自动回复"))
         self.film_filter.setText(_translate("MainWindow", "开启防剧透助手"))
         self.message_back.setText(_translate("MainWindow", "开启防撤回工具"))
-        self.auto_send.setText(_translate("MainWindow", "定时发送设定"))
+        self.auto_send.setText(_translate("MainWindow", "定时发送工具"))
         self.introduction.setText(_translate("MainWindow", "使用说明"))
         self.menu.setTitle(_translate("MainWindow", "设置"))
         self.actionsetting.setText(_translate("MainWindow", "系统设置"))
