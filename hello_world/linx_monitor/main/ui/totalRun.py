@@ -8,10 +8,11 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_totalRun_Form(object):
     def setupUi(self, totalRun_Form):
         totalRun_Form.setObjectName("totalRun_Form")
-        totalRun_Form.resize(534, 257)
+        totalRun_Form.resize(536, 292)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(totalRun_Form)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout()
@@ -98,6 +99,19 @@ class Ui_totalRun_Form(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
         self.verticalLayout_3 = QtWidgets.QVBoxLayout()
         self.verticalLayout_3.setObjectName("verticalLayout_3")
+        self.label_12 = QtWidgets.QLabel(totalRun_Form)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        self.label_12.setFont(font)
+        self.label_12.setObjectName("label_12")
+        self.verticalLayout_3.addWidget(self.label_12)
+        self.time_progressBar = QtWidgets.QProgressBar(totalRun_Form)
+        font = QtGui.QFont()
+        font.setFamily("微软雅黑")
+        self.time_progressBar.setFont(font)
+        self.time_progressBar.setProperty("value", 0)
+        self.time_progressBar.setObjectName("time_progressBar")
+        self.verticalLayout_3.addWidget(self.time_progressBar)
         self.horizontalLayout_6 = QtWidgets.QHBoxLayout()
         self.horizontalLayout_6.setObjectName("horizontalLayout_6")
         self.label_10 = QtWidgets.QLabel(totalRun_Form)
@@ -125,7 +139,7 @@ class Ui_totalRun_Form(object):
         font.setFamily("微软雅黑")
         self.successFile_label.setFont(font)
         self.successFile_label.setStyleSheet("color:green\n"
-"")
+                                             "")
         self.successFile_label.setObjectName("successFile_label")
         self.horizontalLayout_6.addWidget(self.successFile_label)
         self.label_4 = QtWidgets.QLabel(totalRun_Form)
@@ -174,7 +188,6 @@ class Ui_totalRun_Form(object):
         self.verticalLayout_2.addLayout(self.horizontalLayout)
 
         self.retranslateUi(totalRun_Form)
-        self.close_pushButton.clicked.connect(totalRun_Form.close)
         QtCore.QMetaObject.connectSlotsByName(totalRun_Form)
 
     def retranslateUi(self, totalRun_Form):
@@ -187,6 +200,8 @@ class Ui_totalRun_Form(object):
         self.label_3.setText(_translate("totalRun_Form", "批量组名："))
         self.label_6.setText(_translate("totalRun_Form", "秒"))
         self.label_5.setText(_translate("totalRun_Form", "次"))
+        self.label_12.setText(_translate("totalRun_Form", "剩余运行时长"))
+        self.time_progressBar.setFormat(_translate("totalRun_Form", "%vs"))
         self.label_10.setText(_translate("totalRun_Form", "总文件数:"))
         self.totalFile_label.setText(_translate("totalRun_Form", "0"))
         self.label_8.setText(_translate("totalRun_Form", "下载成功数:"))
@@ -196,4 +211,3 @@ class Ui_totalRun_Form(object):
         self.start_pushButton.setText(_translate("totalRun_Form", "批量开始任务"))
         self.download_pushButton.setText(_translate("totalRun_Form", "批量下载"))
         self.close_pushButton.setText(_translate("totalRun_Form", "关闭"))
-

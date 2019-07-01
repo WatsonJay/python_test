@@ -142,6 +142,7 @@ class Ui_simple_Form(object):
         self.graph_widget.setLabel(axis='left', text='百分比(%)')  # 设置Y轴标签
         self.graph_widget.setYRange(0, 150) # 初始化Y轴显示范围
         self.graph_widget.setXRange(0, 15, padding=0) # 初始化X轴显示范围
+        self.graph_widget.setLimits(xMin=-2, yMin=-2, xMax=6000, yMax=200, minXRange=25, minYRange=20, maxXRange=1000)
         self.graph_widget.setLabel(axis='bottom', text='采样点(个)')  # 设置X轴标签
         self.graph_widget.addLegend(size=(20, 10), offset=(12, 12)) # 添加图示
         self.verticalLayout.addWidget(self.graph_widget)

@@ -234,6 +234,7 @@ class simpleForm(QWidget, Ui_simple_Form):
         self.cpu_list = []
         self.mem_list = []
         self.disk_list = []
+        self.nmon_infos = {}
         self.name = ''
         self.fileName = ''
         self.moveable = True
@@ -316,22 +317,27 @@ class simpleForm(QWidget, Ui_simple_Form):
     # 启动nmon记录
     def record_command(self):
         try:
-            self.download_record.setDisabled(True)
-            self.timerDialog = timerDialog()
-            if self.timerDialog.exec_():
-                nmon_infos = self.timerDialog.getInfos()
-                conf = config()
-                infos = conf.sentionAll(self.name)
-                monitor = Monitor_server()
-                ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],
-                                         conf.decrypt(infos['password']))
-                get_msgs = monitor.nmon_run(ssh, nmon_infos['name'], nmon_infos['time'], nmon_infos['tap'])
-                self.showMessage(get_msgs)
-                self.start_record.setDisabled(True)
-                self.record_name.setText(nmon_infos['name'] + '.nmon')
-                self.fileName = nmon_infos['name'] + '.nmon'
-                self.timer.start((int(nmon_infos['time']) * int(nmon_infos['tap']) + 1) * 1000)
-            self.timerDialog.destroy()
+            if self.start_record.text() == '开始':
+                self.download_record.setDisabled(True)
+                self.timerDialog = timerDialog()
+                if self.timerDialog.exec_():
+                    if self.nmon_infos['name'] == '':
+                        return
+                    self.nmon_infos = self.timerDialog.getInfos()
+                    conf = config()
+                    infos = conf.sentionAll(self.name)
+                    monitor = Monitor_server()
+                    ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],
+                                             conf.decrypt(infos['password']))
+                    get_msgs = monitor.nmon_run(ssh, self.nmon_infos['name'], self.nmon_infos['time'], self.nmon_infos['tap'])
+                    self.showMessage(get_msgs)
+                    self.start_record.setText('中止')
+                    self.record_name.setText(self.nmon_infos['name'] + '.nmon')
+                    self.fileName = self.nmon_infos['name'] + '.nmon'
+                    self.timer.start((int(self.nmon_infos['time']) * int(self.nmon_infos['tap']) + 1) * 1000)
+                self.timerDialog.destroy()
+            else:
+                self.cancel()
         except Exception as e:
             self.showMessage(str(e))
             pass
@@ -371,6 +377,20 @@ class simpleForm(QWidget, Ui_simple_Form):
     # 停止线程
     def stopThread(self):
         self.stop.emit()
+
+    def cancel(self):
+        try:
+            conf = config()
+            infos = conf.sentionAll(self.name)
+            monitor = Monitor_server()
+            ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'], conf.decrypt(infos['password']))
+            get_msg = monitor.nmon_cancel(ssh, self.nmon_infos['name'], self.nmon_infos['time'], self.nmon_infos['tap'])
+            self.timer.stop()
+            if get_msg == '取消成功':
+                self.start_record.setText('开始')
+                self.showMessage('已中止nmon运行')
+        except Exception as e:
+            self.showMessage(str(e))
 
     # 打开分析页
     def analysis_show(self):
@@ -795,6 +815,7 @@ class total_run_form(QWidget, Ui_totalRun_Form):
         self.simplePages = locals()
         self.setupUi(self)
         self.loadConfig()
+        self.count = 0
         self.download_pushButton.setDisabled(True)
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.nmon_finished)
@@ -802,6 +823,7 @@ class total_run_form(QWidget, Ui_totalRun_Form):
         self.remove_pushButton.clicked.connect(self.deladded)
         self.start_pushButton.clicked.connect(self.totalrun)
         self.download_pushButton.clicked.connect(self.nmon_download)
+        self.close_pushButton.clicked.connect(self.cancel)
 
     # 读取系统配置
     def loadConfig(self):
@@ -834,12 +856,20 @@ class total_run_form(QWidget, Ui_totalRun_Form):
     def totalrun(self):
         try:
             conf = config()
+            if self.added_listWidget.count() == 0:
+                self.Tips("未添加服务器")
+                return
+            if self.groupName_lineEdit.text() == '':
+                self.Tips("未输入组名")
+                return
             self.remove_pushButton.setDisabled(True)
             self.add_pushButton.setDisabled(True)
             self.tap_spinBox.setDisabled(True)
             self.time_spinBox.setDisabled(True)
+            self.download_pushButton.setDisabled(True)
             self.groupName_lineEdit.setDisabled(True)
             self.start_pushButton.setDisabled(True)
+            self.time_progressBar.setValue(0)
             for i in range(self.added_listWidget.count()):
                 sention = self.added_listWidget.item(i).text()
                 infos = conf.sentionAll(sention)
@@ -861,7 +891,8 @@ class total_run_form(QWidget, Ui_totalRun_Form):
                     self.groupName_lineEdit.setDisabled(False)
                     self.start_pushButton.setDisabled(False)
                 monitor.sshClose(ssh)
-            self.timer.start((self.time_spinBox.value() * self.tap_spinBox.value() + 1) * 1000)
+            self.time_progressBar.setMaximum((self.time_spinBox.value() * self.tap_spinBox.value()))
+            self.timer.start(1000)
             self.Tips('已启动nmon,请稍候')
             self.totalFile_label.setText(str(self.added_listWidget.count()))
         except Exception as e:
@@ -875,9 +906,15 @@ class total_run_form(QWidget, Ui_totalRun_Form):
 
     # 返回nmon记录
     def nmon_finished(self):
-        self.download_pushButton.setDisabled(False)
-        self.Tips('nmon运行结束,可进行下载')
-        self.timer.stop()
+        if self.count == (self.time_spinBox.value() * self.tap_spinBox.value()):
+            self.download_pushButton.setDisabled(False)
+            self.Tips('nmon运行结束,可进行下载')
+            self.timer.stop()
+            self.count = 0
+            self.time_progressBar.setValue(0)
+            return
+        self.count += 1
+        self.time_progressBar.setValue((self.time_spinBox.value() * self.tap_spinBox.value())-self.count)
 
     # 下载nmon记录
     def nmon_download(self):
@@ -895,6 +932,7 @@ class total_run_form(QWidget, Ui_totalRun_Form):
             self.nameSignal.emit()
             self.fileNameSignal.emit()
             self.DownloadThread.start()
+            self.start_pushButton.setDisabled(False)
         except Exception as e:
             self.Tips(str(e))
 
@@ -909,7 +947,24 @@ class total_run_form(QWidget, Ui_totalRun_Form):
             self.Tips('下载完成')
             self.Downstop.emit()
 
-
+    # 取消运行
+    def cancel(self):
+        try:
+            conf = config()
+            for i in range(self.added_listWidget.count()):
+                sention = self.added_listWidget.item(i).text()
+                infos = conf.sentionAll(sention)
+                monitor = Monitor_server()
+                ssh = monitor.sshConnect(infos['ip'], int(infos['port']), infos['user'],
+                                         conf.decrypt(infos['password']))
+                get_msgs = monitor.nmon_cancel(ssh, self.groupName_lineEdit.text() + str(i),
+                                            str(self.time_spinBox.value()),
+                                            str(self.tap_spinBox.value()))
+                monitor.sshClose(ssh)
+                self.timer.stop()
+        except Exception as e:
+            self.Tips(str(e))
+        self.close()
     # 提示窗口
     def Tips(self, message):
         QMessageBox.about(self, "提示", message)
@@ -935,6 +990,7 @@ class total_analysis_form(QWidget, Ui_totanl_Form):
             return
         for filePath in filePaths:
             self.file_listWidget.addItem(filePath)
+        self.save_pushButton.setDisabled(True)
 
     # 删除
     def delFile(self):
@@ -946,6 +1002,12 @@ class total_analysis_form(QWidget, Ui_totanl_Form):
     # 分析
     def totalanlysis(self):
         try:
+            if self.file_listWidget.count() == 0:
+                self.Tips("未添加分析文件")
+                return
+            for page in self.analysisPage:
+                if 'totalAnalysis' in page:
+                    self.analysisPage[page].close()
             for i in range(self.file_listWidget.count()):
                 file = self.file_listWidget.item(i).text()
                 self.analysisPage['totalAnalysis' + str(i)] = analysis_form()
@@ -988,6 +1050,7 @@ class total_analysis_form(QWidget, Ui_totanl_Form):
                 return
             wb.save(filePath)
             self.Tips('写入数据成功！')
+            self.analysis_pushButton.setDisabled(False)
         except Exception as e:
             self.Tips('导出execl异常，请重试')
 
@@ -1022,5 +1085,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = password_form()
     WindowShow = MyMainWindow()
-    win.show()
+    WindowShow.show()
     sys.exit(app.exec_())
