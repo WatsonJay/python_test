@@ -42,7 +42,9 @@ class Monitor_server:
             get_msgs = self.sshExecCmd(sshClient, command)
             MemTotal = int(re.findall("MemTotal\:\s*(\d+)\skB\n", "".join(get_msgs))[0])
             MemFree = int(re.findall("MemFree\:\s*(\d+)\skB\n", "".join(get_msgs))[0])
-            UsedMem = round((MemTotal - MemFree) / MemTotal * 100, 2)
+            Cached  = int(re.findall("Cached\:\s*(\d+)\skB\n", "".join(get_msgs))[0])
+            Buffers = int(re.findall("Cached\:\s*(\d+)\skB\n", "".join(get_msgs))[0])
+            UsedMem = round((MemTotal - MemFree - Cached - Buffers) / MemTotal * 100, 2)
             Mem_info = UsedMem
             return Mem_info
         except Exception as e:
