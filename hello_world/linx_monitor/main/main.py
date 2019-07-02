@@ -33,7 +33,7 @@ from hello_world.linx_monitor.main.ui.user_helper import User_helper
 from hello_world.linx_monitor.main.server_controller import Monitor_server
 from hello_world.linx_monitor.main.ui.password_gui import Ui_password_Dialog
 
-
+# 主页面
 class MyMainWindow(QMainWindow, Ui_Monitor_Window):
     # 初始化
     def __init__(self, parent=None):
@@ -321,9 +321,10 @@ class simpleForm(QWidget, Ui_simple_Form):
                 self.download_record.setDisabled(True)
                 self.timerDialog = timerDialog()
                 if self.timerDialog.exec_():
-                    if self.nmon_infos['name'] == '':
-                        return
                     self.nmon_infos = self.timerDialog.getInfos()
+                    if self.nmon_infos['name'] == '':
+                        self.showMessage("名称未输入，无法启动")
+                        return
                     conf = config()
                     infos = conf.sentionAll(self.name)
                     monitor = Monitor_server()
@@ -1085,5 +1086,5 @@ if __name__ == '__main__':
     app = QApplication(sys.argv)
     win = password_form()
     WindowShow = MyMainWindow()
-    WindowShow.show()
+    win.show()
     sys.exit(app.exec_())
