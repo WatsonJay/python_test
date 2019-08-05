@@ -5,7 +5,7 @@ import shutil
 import time
 from hello_world import free_proxyIP
 
-urls = ['https://www.mzitu.com/tag/youhuo/page/{}/'.format(str(i)) for i in range(1, 10)]
+urls = ['https://www.mzitu.com/xinggan/page/{}/'.format(str(i)) for i in range(1, 10)]
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0'
 }
