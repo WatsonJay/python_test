@@ -1,12 +1,25 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import time
 import sys
 import requests
 import urllib, base64
 from urllib import request
 from urllib import parse
+import pyHook
+import pythoncom
+from win32api import GetSystemMetrics as gsm
 import json
 import re
+
+# 提前绑定鼠标位置事件
+from PIL import Image,ImageGrab
+
+#创建全局变量，以便储存鼠标Down 和 Up 时的坐标
+positionDown = ()
+position = ()
+full = False
+hm = None
+
 
 def get_token(API_Key,Secret_Key):
     # 获取access_token
@@ -37,10 +50,56 @@ def recognition_word_high(filepath,filename,access_token):
         for each in world:
             print(each)
 
-if __name__ == '__main__':
+
+#鼠标左键按下触发
+def onMouseEventDown(event):
+    if event.MessageName == "mouse left down":
+        print("MessageName:", event.MessageName)
+        global positionDown
+        positionDown = event.Position
+    return True
+#鼠标左键松开触发
+def onMouseEventUp(event):
+    if event.MessageName == "mouse left up":
+        print("MessageName:", event.MessageName)
+        global positionDown
+        global position
+        position = positionDown + event.Position
+    return True
+
+#截屏方法
+def  printScreen(position):
+    im = ImageGrab.grab(position)
+    im.save('printscreen.jpg')
+    recognize()
+    return True
+
+#获取键盘值方法
+def onKeyboardEvent(event):
+    if(event.Key=='Space'):
+        global position
+        if position is not None:
+            printScreen(position)
+    return True
+
+
+def capture():
+    hm = pyHook.HookManager()
+    hm.KeyDown = onKeyboardEvent
+    hm.MouseAllButtonsDown = onMouseEventDown
+    hm.MouseAllButtonsUp = onMouseEventUp
+    hm.HookMouse()
+    hm.HookKeyboard()
+    pythoncom.PumpMessages()
+
+def recognize():
     API_Key = "0XjjziGbG8ahFz8K6oVmXhh0"
     Secret_Key = "mXUApNu1qt9kktS3Rz2PhQ2qTZPu9gCb"
-    filepath = "C:/Users/44672/Pictures/Screenshots/"
-    filename="1.png"
-    access_token=get_token(API_Key,Secret_Key)
-    recognition_word_high=recognition_word_high(filepath,filename,access_token)
+    filepath = ""
+    filename = "printscreen.jpg"
+    access_token = get_token(API_Key, Secret_Key)
+    recognition_word = recognition_word_high(filepath, filename, access_token)
+    print(recognition_word)
+
+if __name__ == '__main__':
+    capture()
