@@ -60,8 +60,8 @@ def check(writer):
         save(writer)  # 保存能用的 IP
 
 def proxyip():
-    csv_file_read1 = open('IP/validate.csv', 'r')
-    csv_file_read = open('IP/validate.csv', 'r')
+    csv_file_read1 = open('../IP/validate.csv', 'r')
+    csv_file_read = open('../IP/validate.csv', 'r')
     i=len(csv_file_read1.readlines())
     a = random.randint(1,i)
     lines = csv.reader(csv_file_read)

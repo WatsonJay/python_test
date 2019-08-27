@@ -9,11 +9,14 @@ urls = ['https://www.mzitu.com/xinggan/page/{}/'.format(str(i)) for i in range(1
 headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:65.0) Gecko/20100101 Firefox/65.0'
 }
-downpic_headers = {
-
-}
 
 def get_info_url(url):
+    is_exists = os.path.exists("./meizitu")
+    # 判断结果
+    if not is_exists:
+        # 如果不存在则创建目录
+        # 创建目录操作函数
+        os.makedirs("./meizitu")
     ip = free_proxyIP.proxyip()
     Proxy_Ip = {'http': ip}
     html = requests.get(url, headers=headers, proxies=Proxy_Ip, timeout=3)
@@ -43,10 +46,10 @@ def downloadPic(title, pic_url_list):
     # 图片数量
     count = len(pic_url_list)
     # 文件夹格式
-    dirName = u"girl_picture/%s[%sP]" % (title, str(count))
+    dirName = u"meizitu/%s[%sP]" % (title, str(count))
     topdirName = u"%s[%sP]" % (title, str(count))
     # 新建文件夹
-    if topdirName not in os.listdir('./girl_picture'):
+    if topdirName not in os.listdir('./meizitu'):
         os.mkdir(dirName)
     else:
         shutil.rmtree(dirName)

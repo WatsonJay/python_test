@@ -99,7 +99,6 @@ def recognize():
     filename = "printscreen.jpg"
     access_token = get_token(API_Key, Secret_Key)
     recognition_word = recognition_word_high(filepath, filename, access_token)
-    print(recognition_word)
 
 if __name__ == '__main__':
     capture()
