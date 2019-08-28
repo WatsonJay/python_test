@@ -34,7 +34,12 @@ def get_info_url(url):
             get_page_url(detail_url)
 
 def get_page_url(url):
-    print("1")
+    ip = free_proxyIP.proxyip()
+    Proxy_Ip = {'http': ip}
+    list = requests.get(url, headers=headers, proxies=Proxy_Ip, timeout=3)
+    selector = etree.HTML(list.text)
+    pic_url = selector.xpath('//div[@class="img-wrap-inner"]/img/@src')
+    print(pic_url)
 
 def get_token(api_key,secret_key):
     # 获取token
