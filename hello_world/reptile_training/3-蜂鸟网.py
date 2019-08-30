@@ -18,7 +18,7 @@ def get_info_url(url):
     # 把json形式的字符串转换成python形式的Unicode字符串
     unicodestr = json.loads(html.text)
     # python形式的列表
-    city_list = jsonpath.jsonpath(unicodestr, "$..name")
+    pic_list = jsonpath.jsonpath(unicodestr, "$..picUrl")
     print(1)
 
 if __name__ == '__main__':
