@@ -2,6 +2,7 @@ import sys
 import time
 
 from PyQt5 import QtCore
+from PyQt5.QtCore import QDate
 from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from hello_world.talk_to_girl.main.gui.gui import Ui_MainWindow
@@ -40,6 +41,11 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         try:
             conf = config()
             self.wechatNameEdit.setText(conf.getOption("config", "wechat_name"))
+            self.nickNameEdit.setText(conf.getOption("config", "nick_name"))
+            self.birthMonthBox.setValue(int(conf.getOption("config", "bitrh_month")))
+            self.birthDayBox.setValue(int(conf.getOption("config", "bitrh_day")))
+            self.memDateEdit.setDate(QDate.fromString(conf.getOption("config", "mem_day"), 'yyyy-MM-dd'))
+            # self.memDateEdit.date().toString('yyyy-MM-dd')
             enable = conf.getOption("config", "is_auto_talk")
             if enable == 'False':
                 self.talkOffButton.setChecked(True)

@@ -446,38 +446,11 @@ font-weight:700;}</string>
              </widget>
             </item>
             <item row="3" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,0,2,0">
+             <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0">
               <item>
-               <widget class="QSpinBox" name="memMonthBox">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>12</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_11">
-                <property name="text">
-                 <string>月</string>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QSpinBox" name="memDayBox">
-                <property name="minimum">
-                 <number>1</number>
-                </property>
-                <property name="maximum">
-                 <number>31</number>
-                </property>
-               </widget>
-              </item>
-              <item>
-               <widget class="QLabel" name="label_12">
-                <property name="text">
-                 <string>日</string>
+               <widget class="QDateEdit" name="memDateEdit">
+                <property name="displayFormat">
+                 <string>yyyy年MM月dd日</string>
                 </property>
                </widget>
               </item>
