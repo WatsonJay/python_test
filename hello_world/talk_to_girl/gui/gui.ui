@@ -58,9 +58,16 @@ border-bottom-left-radius:10px;
 }
 QLabel{border:none;color:white;}
 QGroupBox{color:white;}
-QRadioButton{color:white;}</string>
+QRadioButton{color:white;}
+QPushButton{
+border:none;
+color:white;
+border:none;
+border-bottom:1px solid white;
+font-size:18px;
+font-weight:700;}</string>
       </property>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout_3" stretch="1,1">
        <property name="leftMargin">
         <number>5</number>
        </property>
@@ -74,7 +81,7 @@ QRadioButton{color:white;}</string>
         <number>10</number>
        </property>
        <item>
-        <layout class="QGridLayout" name="gridLayout" rowstretch="1,0" columnstretch="1,0">
+        <layout class="QGridLayout" name="gridLayout" rowstretch="1,1" columnstretch="2,1">
          <item row="0" column="1">
           <widget class="QGroupBox" name="groupBox_2">
            <property name="font">
@@ -101,7 +108,7 @@ QRadioButton{color:white;}</string>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QTimeEdit" name="timeEdit"/>
+             <widget class="QTimeEdit" name="wakeUpEdit"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_7">
@@ -143,13 +150,13 @@ QRadioButton{color:white;}</string>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QTimeEdit" name="timeEdit_2"/>
+             <widget class="QTimeEdit" name="lunchTimeEdit"/>
             </item>
             <item row="2" column="1">
-             <widget class="QTimeEdit" name="timeEdit_3"/>
+             <widget class="QTimeEdit" name="dinnerTimeEdit"/>
             </item>
             <item row="3" column="1">
-             <widget class="QTimeEdit" name="timeEdit_4"/>
+             <widget class="QTimeEdit" name="sleepTimeEdit"/>
             </item>
            </layout>
           </widget>
@@ -182,7 +189,7 @@ QRadioButton{color:white;}</string>
             <item row="0" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <widget class="QRadioButton" name="radioButton_2">
+               <widget class="QRadioButton" name="talkOnButton">
                 <property name="font">
                  <font>
                   <family>楷体</family>
@@ -195,7 +202,7 @@ QRadioButton{color:white;}</string>
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="radioButton">
+               <widget class="QRadioButton" name="talkOffButton">
                 <property name="font">
                  <font>
                   <family>楷体</family>
@@ -223,7 +230,7 @@ QRadioButton{color:white;}</string>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_3"/>
+             <widget class="QLineEdit" name="appIDEdit"/>
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_15">
@@ -239,7 +246,7 @@ QRadioButton{color:white;}</string>
              </widget>
             </item>
             <item row="2" column="1">
-             <widget class="QLineEdit" name="lineEdit_4"/>
+             <widget class="QLineEdit" name="appKeyEdit"/>
             </item>
             <item row="3" column="0">
              <widget class="QLabel" name="label_16">
@@ -257,7 +264,7 @@ QRadioButton{color:white;}</string>
             <item row="3" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
-               <widget class="QRadioButton" name="radioButton_3">
+               <widget class="QRadioButton" name="weathOnButton">
                 <property name="font">
                  <font>
                   <family>楷体</family>
@@ -270,7 +277,7 @@ QRadioButton{color:white;}</string>
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="radioButton_4">
+               <widget class="QRadioButton" name="weathOffButton">
                 <property name="font">
                  <font>
                   <family>楷体</family>
@@ -300,7 +307,7 @@ QRadioButton{color:white;}</string>
             <item row="4" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QRadioButton" name="radioButton_5">
+               <widget class="QRadioButton" name="emojiOnButton">
                 <property name="font">
                  <font>
                   <family>楷体</family>
@@ -313,7 +320,7 @@ QRadioButton{color:white;}</string>
                </widget>
               </item>
               <item>
-               <widget class="QRadioButton" name="radioButton_6">
+               <widget class="QRadioButton" name="emojiOffButton">
                 <property name="font">
                  <font>
                   <family>楷体</family>
@@ -356,7 +363,7 @@ QRadioButton{color:white;}</string>
              </widget>
             </item>
             <item row="0" column="1">
-             <widget class="QLineEdit" name="lineEdit"/>
+             <widget class="QLineEdit" name="wechatNameEdit"/>
             </item>
             <item row="1" column="0">
              <widget class="QLabel" name="label_2">
@@ -372,7 +379,7 @@ QRadioButton{color:white;}</string>
              </widget>
             </item>
             <item row="1" column="1">
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="nickNameEdit"/>
             </item>
             <item row="2" column="0">
              <widget class="QLabel" name="label_3">
@@ -390,7 +397,14 @@ QRadioButton{color:white;}</string>
             <item row="2" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout" stretch="2,0,2,0">
               <item>
-               <widget class="QComboBox" name="comboBox"/>
+               <widget class="QSpinBox" name="birthMonthBox">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>12</number>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QLabel" name="label_4">
@@ -400,7 +414,14 @@ QRadioButton{color:white;}</string>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox_2"/>
+               <widget class="QSpinBox" name="birthDayBox">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>31</number>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QLabel" name="label_5">
@@ -427,7 +448,14 @@ QRadioButton{color:white;}</string>
             <item row="3" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="2,0,2,0">
               <item>
-               <widget class="QComboBox" name="comboBox_4"/>
+               <widget class="QSpinBox" name="memMonthBox">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>12</number>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QLabel" name="label_11">
@@ -437,7 +465,14 @@ QRadioButton{color:white;}</string>
                </widget>
               </item>
               <item>
-               <widget class="QComboBox" name="comboBox_3"/>
+               <widget class="QSpinBox" name="memDayBox">
+                <property name="minimum">
+                 <number>1</number>
+                </property>
+                <property name="maximum">
+                 <number>31</number>
+                </property>
+               </widget>
               </item>
               <item>
                <widget class="QLabel" name="label_12">
@@ -449,6 +484,13 @@ QRadioButton{color:white;}</string>
              </layout>
             </item>
            </layout>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QPushButton" name="startUpButton">
+           <property name="text">
+            <string>启动</string>
+           </property>
           </widget>
          </item>
         </layout>
@@ -479,7 +521,7 @@ QRadioButton{color:white;}</string>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QTextEdit" name="textEdit">
+           <widget class="QTextEdit" name="valentineDayEdit">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -523,12 +565,12 @@ QRadioButton{color:white;}</string>
              </font>
             </property>
             <property name="text">
-             <string>圣诞节</string>
+             <string>生日</string>
             </property>
            </widget>
           </item>
           <item row="1" column="1">
-           <widget class="QTextEdit" name="textEdit_2">
+           <widget class="QTextEdit" name="womenDayEdit">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -538,7 +580,7 @@ QRadioButton{color:white;}</string>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QTextEdit" name="textEdit_3">
+           <widget class="QTextEdit" name="christmasEdit">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -548,7 +590,7 @@ QRadioButton{color:white;}</string>
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QTextEdit" name="textEdit_4">
+           <widget class="QTextEdit" name="birthDayEdit">
             <property name="maximumSize">
              <size>
               <width>16777215</width>
@@ -607,23 +649,13 @@ border-bottom-right-radius:10px;}</string>
           </spacer>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_2">
-           <property name="maximumSize">
+          <widget class="QPushButton" name="pushButton">
+           <property name="minimumSize">
             <size>
              <width>20</width>
              <height>20</height>
             </size>
            </property>
-           <property name="styleSheet">
-            <string notr="true">QPushButton{background:#6DDF6D;border-radius:10px;}QPushButton:hover{background:green;}</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="pushButton">
            <property name="maximumSize">
             <size>
              <width>20</width>
@@ -634,12 +666,18 @@ border-bottom-right-radius:10px;}</string>
             <string notr="true">QPushButton{background:#F7D674;border-radius:10px;}QPushButton:hover{background:yellow;}</string>
            </property>
            <property name="text">
-            <string/>
+            <string>-</string>
            </property>
           </widget>
          </item>
          <item>
           <widget class="QPushButton" name="pushButton_3">
+           <property name="minimumSize">
+            <size>
+             <width>20</width>
+             <height>20</height>
+            </size>
+           </property>
            <property name="maximumSize">
             <size>
              <width>20</width>
@@ -650,7 +688,7 @@ border-bottom-right-radius:10px;}</string>
             <string notr="true">QPushButton{background:#F76677;border-radius:10px;}QPushButton:hover{background:red;}</string>
            </property>
            <property name="text">
-            <string/>
+            <string>X</string>
            </property>
           </widget>
          </item>
@@ -670,7 +708,7 @@ border-bottom-right-radius:10px;}</string>
         </widget>
        </item>
        <item>
-        <widget class="QTextBrowser" name="textBrowser"/>
+        <widget class="QTextBrowser" name="MsgBrowser"/>
        </item>
       </layout>
      </widget>
@@ -700,7 +738,7 @@ border-bottom-right-radius:10px;}</string>
    <sender>pushButton</sender>
    <signal>clicked()</signal>
    <receiver>MainWindow</receiver>
-   <slot>showMaximized()</slot>
+   <slot>showMinimized()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>772</x>
@@ -709,22 +747,6 @@ border-bottom-right-radius:10px;}</string>
     <hint type="destinationlabel">
      <x>724</x>
      <y>-3</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>pushButton_2</sender>
-   <signal>clicked()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>showMinimized()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>740</x>
-     <y>14</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>584</x>
-     <y>-13</y>
     </hint>
    </hints>
   </connection>
