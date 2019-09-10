@@ -66,6 +66,10 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                 self.emojiOffButton.setChecked(True)
             else:
                 self.emojiOnButton.setChecked(True)
+            self.valentineDayEdit.setText(conf.getOption("config", "valentine_Day"))
+            self.birthDayEdit.setText(conf.getOption("config", "birth_Day"))
+            self.christmasEdit.setText(conf.getOption("config", "christmas_Day"))
+            self.womenDayEdit.setText(conf.getOption("config", "women_Day"))
             self.showMessage("系统配置加载完成")
         except Exception as e:
             self.Tips("系统异常，请重试")
