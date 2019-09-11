@@ -74,6 +74,25 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         except Exception as e:
             self.Tips("系统异常，请重试")
 
+    # 保存配置文件
+    def Save(self):
+        conf = config()
+        conf.addoption('config', 'wechat_name', conf.split(list))
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'bitrh_month', conf.encrypt(apiPass))
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'nick_name', apikey)
+        conf.addoption('config', 'nick_name', apikey)
+        if self.replace_close.isChecked():
+            conf.addoption('turing', 'enable', 'False')
+        if self.replace_open.isChecked():
+            conf.addoption('turing', 'enable', 'True')
+
     # 显示日志
     def showMessage(self, msg):
         msg = "[" + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) + "]" + msg
