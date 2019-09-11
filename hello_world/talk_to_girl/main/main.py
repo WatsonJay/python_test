@@ -15,6 +15,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
         self.flag = False
         self.setupUi(self)
         self.loadConfig()
+        self.saveButton.clicked.connect(self.Save) #保存
 
     # 无边框移动窗体
     def mousePressEvent(self, QMouseEvent):
@@ -49,13 +50,13 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.lunchTimeEdit.setTime(QTime.fromString(conf.getOption("config", "lunch_time"), 'hh:mm'))
             self.dinnerTimeEdit.setTime(QTime.fromString(conf.getOption("config", "dinner_time"), 'hh:mm'))
             self.sleepTimeEdit.setTime(QTime.fromString(conf.getOption("config", "sleep_time"), 'hh:mm'))
-            # self.wakeUpEdit.time().toString('hh:mm')
-            # self.memDateEdit.date().toString('yyyy-MM-dd')
             enable = conf.getOption("config", "is_auto_talk")
             if enable == 'False':
                 self.talkOffButton.setChecked(True)
             else:
                 self.talkOnButton.setChecked(True)
+            self.appIDEdit.setText(conf.getOption("config", "app_id"))
+            self.appKeyEdit.setText(conf.getOption("config", "app_key"))
             enable = conf.getOption("config", "is_weather")
             if enable == 'False':
                 self.weatherOffButton.setChecked(True)
@@ -76,22 +77,38 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
 
     # 保存配置文件
     def Save(self):
-        conf = config()
-        conf.addoption('config', 'wechat_name', conf.split(list))
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'bitrh_month', conf.encrypt(apiPass))
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'nick_name', apikey)
-        conf.addoption('config', 'nick_name', apikey)
-        if self.replace_close.isChecked():
-            conf.addoption('turing', 'enable', 'False')
-        if self.replace_open.isChecked():
-            conf.addoption('turing', 'enable', 'True')
+        try:
+            conf = config()
+            conf.addoption('config', 'wechat_name', self.wechatNameEdit.text())
+            conf.addoption('config', 'nick_name', self.nickNameEdit.text())
+            conf.addoption('config', 'bitrh_month', self.birthMonthBox.text())
+            conf.addoption('config', 'bitrh_day', self.birthDayBox.text())
+            conf.addoption('config', 'mem_day', self.memDateEdit.date().toString('yyyy-MM-dd'))
+            conf.addoption('config', 'weak_time', self.wakeUpEdit.time().toString('hh:mm'))
+            conf.addoption('config', 'lunch_time', self.lunchTimeEdit.time().toString('hh:mm'))
+            conf.addoption('config', 'dinner_time', self.dinnerTimeEdit.time().toString('hh:mm'))
+            conf.addoption('config', 'sleep_time', self.sleepTimeEdit.time().toString('hh:mm'))
+            if self.talkOnButton.isChecked():
+                conf.addoption('config', 'is_auto_talk', 'True')
+            if self.talkOffButton.isChecked():
+                conf.addoption('config', 'is_auto_talk', 'False')
+            conf.addoption('config', 'app_id', self.appIDEdit.text())
+            conf.addoption('config', 'app_key', self.appKeyEdit.text())
+            if self.weatherOnButton.isChecked():
+                conf.addoption('config', 'is_weather', 'True')
+            if self.weatherOffButton.isChecked():
+                conf.addoption('config', 'is_weather', 'False')
+            if self.emojiOnButton.isChecked():
+                conf.addoption('config', 'is_emoji', 'True')
+            if self.emojiOffButton.isChecked():
+                conf.addoption('config', 'is_emoji', 'False')
+            conf.addoption('config', 'valentine_Day', self.valentineDayEdit.toPlainText())
+            conf.addoption('config', 'birth_Day', self.birthDayEdit.toPlainText())
+            conf.addoption('config', 'christmas_Day', self.christmasEdit.toPlainText())
+            conf.addoption('config', 'women_Day', self.womenDayEdit.toPlainText())
+            self.showMessage("系统配置保存完成")
+        except Exception as e:
+            self.Tips("系统异常，请重试")
 
     # 显示日志
     def showMessage(self, msg):
