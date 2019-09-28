@@ -7,15 +7,18 @@ from PyQt5.QtGui import QCursor
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 from hello_world.talk_to_girl.main.gui.gui import Ui_MainWindow
 from hello_world.talk_to_girl.main.config.config import config
+from hello_world.talk_to_girl.main.wechatThread import wechatThread
 
 
 class MyMainWindow(QMainWindow, Ui_MainWindow):
+    sign = 0
     def __init__(self, parent=None):
         super(MyMainWindow, self).__init__(parent)
         self.flag = False
         self.setupUi(self)
         self.loadConfig()
         self.saveButton.clicked.connect(self.Save) #保存
+        self.startUpButton.clicked.connect(self.startUp)
 
     # 无边框移动窗体
     def mousePressEvent(self, QMouseEvent):
@@ -109,6 +112,26 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
             self.showMessage("系统配置保存完成")
         except Exception as e:
             self.Tips("系统异常，请重试")
+
+    # 子线程创建与毁灭
+    def startUp(self):
+        try:
+            if self.sign == 0:
+                self.sign = 1
+                self.startUpButton.setText('关闭')
+                self.showMessage("程序已启动")
+                self.wechatThread = wechatThread()
+                self.wechatThread.getMsgSignal.connect(self.showMessage)
+                self.wechatThread.start()
+            else:
+                self.sign = 0
+                self.startUpButton.setText('启动')
+                self.showMessage("程序已终止")
+                self.wechatThread.terminate()
+                del self.wechatThread
+        except Exception as e:
+            pass
+
 
     # 显示日志
     def showMessage(self, msg):
