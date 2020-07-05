@@ -10,10 +10,15 @@ class config:
         self.key = key.encode('utf-8')
         self.mode = AES.MODE_CBC
 
+
     # 读取配置文件
     def readConfig(self):
         config = configparser.ConfigParser()
-        config.read("config/config.ini", encoding="utf-8")
+        with open("config/config.ini", mode='rb') as f:
+            content = f.read()
+        if content.startswith(b'\xef\xbb\xbf'):  # 去掉 utf8 bom 头
+            content = content[3:]
+        config.read_string(content.decode('utf8'))
         return config
 
     # 写入配置文件
@@ -113,3 +118,7 @@ class config:
         cryptor = AES.new(self.key, self.mode, self.key)
         plain_text = bytes.decode(cryptor.decrypt(a2b_hex(bytes(text, encoding='utf8'))), encoding='utf8')
         return plain_text.rstrip('\0')
+
+if __name__ == '__main__':
+    config = config()
+    print(config.encrypt('19941121'))

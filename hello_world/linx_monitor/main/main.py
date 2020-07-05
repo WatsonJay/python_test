@@ -597,7 +597,7 @@ class analysis_form(QWidget, Ui_nmonAnalysis_Form):
         self.end_spinBox.setMaximum(self.len)
         self.end_spinBox.setValue(self.len)
         self.cpu_user_line.setData(self.cpu_user)
-        self.cpu_idle_line.setData(self.cpu_Idle)
+        #self.cpu_idle_line.setData(self.cpu_Idle)
         self.mem_line.setData(self.mem)
         self.iops_line.setData(self.iops)
         self.net_read_line.setData(self.net_read)
