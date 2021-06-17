@@ -34,3 +34,10 @@ def colname_to_colnum(colname):
         col += (ord(ch)-ord('A')+1)*power
         power *= 26
     return col-1
+
+# 获取字符串长度，一个中文的长度为2
+def len_byte(value):
+    length = len(value)
+    utf8_length = len(value.encode('utf-8'))
+    length = (utf8_length - length) / 2 + length
+    return int(length)

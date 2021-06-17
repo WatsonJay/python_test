@@ -80,7 +80,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                         self.time.emit()
                         self.sendWords.connect(lambda: self.autoSendThread.setSendWords(sendWords))#通过信号槽设置发送词
                         self.sendWords.emit()
-                        self.autoSendThread.getMsgSignal.connect(self.showMessage)
+                            self.autoSendThread.getMsgSignal.connect(self.showMessage)
                         self.autoSendThread.start()
                 else:
                     self.auto_send.setText('定时发送设定')
