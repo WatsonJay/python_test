@@ -69,7 +69,7 @@ class MyMainWindow(QMainWindow, Ui_MainWindow):
                     self.AutoSendWindow = MyAutoSendWindow()
                     if self.AutoSendWindow.exec_():
                         # 数据插入表格
-                        time = int(self.AutoSendWindow.getTime())
+                        time = self.AutoSendWindow.getTime()
                         sendWords = self.AutoSendWindow.getSendWords()
                         self.infomation_area.clear()
                         self.auto_send.setText('停止自动发送')
@@ -188,15 +188,16 @@ class MyAutoSendWindow(QDialog, Ui_auto_send_Dialog):
     def __init__(self, parent=None):
         super(MyAutoSendWindow, self).__init__(parent)
         self.setupUi(self)
+        self.sendWords.setText('测试中心\n截至{}\n【职工】无\n【职工家属】无\n【医学隔离】无')
 
     def getTime(self):
-        return self.timeBox.text()
+        return self.timeLineEdit.text()
 
     def getSendWords(self):
         return self.sendWords.toPlainText()
 
     def setTime(self, time):
-        return self.timeBox.setText(time)
+        return self.timeLineEdit.setText(time)
 
     def setSendWords(self, sendword):
         return self.sendWords.setText(sendword)

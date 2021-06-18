@@ -2,11 +2,13 @@
 
 # Form implementation generated from reading ui file 'auto_send_setting.ui'
 #
-# Created by: PyQt5 UI code generator 5.11.2
+# Created by: PyQt5 UI code generator 5.13.2
 #
 # WARNING! All changes made in this file will be lost!
 
+
 from PyQt5 import QtCore, QtGui, QtWidgets
+
 
 class Ui_auto_send_Dialog(object):
     def setupUi(self, auto_send_Dialog):
@@ -33,29 +35,12 @@ class Ui_auto_send_Dialog(object):
         self.label_2.setFont(font)
         self.label_2.setObjectName("label_2")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.label_2)
-        self.horizontalLayout = QtWidgets.QHBoxLayout()
-        self.horizontalLayout.setObjectName("horizontalLayout")
-        self.timeBox = QtWidgets.QSpinBox(auto_send_Dialog)
-        self.timeBox.setMinimum(5)
-        self.timeBox.setMaximum(360)
-        self.timeBox.setProperty("value", 10)
-        self.timeBox.setObjectName("timeBox")
-        self.horizontalLayout.addWidget(self.timeBox)
-        self.label_3 = QtWidgets.QLabel(auto_send_Dialog)
-        font = QtGui.QFont()
-        font.setFamily("微软雅黑")
-        font.setPointSize(9)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_3.setFont(font)
-        self.label_3.setObjectName("label_3")
-        self.horizontalLayout.addWidget(self.label_3)
-        self.horizontalLayout.setStretch(0, 9)
-        self.horizontalLayout.setStretch(1, 1)
-        self.formLayout.setLayout(0, QtWidgets.QFormLayout.FieldRole, self.horizontalLayout)
         self.sendWords = QtWidgets.QTextEdit(auto_send_Dialog)
         self.sendWords.setObjectName("sendWords")
         self.formLayout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.sendWords)
+        self.timeLineEdit = QtWidgets.QLineEdit(auto_send_Dialog)
+        self.timeLineEdit.setObjectName("timeLineEdit")
+        self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.timeLineEdit)
         self.horizontalLayout_2.addLayout(self.formLayout)
         self.buttonBox = QtWidgets.QDialogButtonBox(auto_send_Dialog)
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
@@ -71,7 +56,5 @@ class Ui_auto_send_Dialog(object):
     def retranslateUi(self, auto_send_Dialog):
         _translate = QtCore.QCoreApplication.translate
         auto_send_Dialog.setWindowTitle(_translate("auto_send_Dialog", "自动回复设定"))
-        self.label.setText(_translate("auto_send_Dialog", "间隔时长："))
+        self.label.setText(_translate("auto_send_Dialog", "发送时间："))
         self.label_2.setText(_translate("auto_send_Dialog", "自动回复内容："))
-        self.label_3.setText(_translate("auto_send_Dialog", "秒"))
-

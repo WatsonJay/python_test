@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import datetime
 import os
 from time import sleep
 
@@ -11,7 +12,7 @@ class autoSend(QThread):
 
     def __init__(self, parent=None):
         super(autoSend, self).__init__(parent)
-        self.sleepTime = 10
+        self.timelist = []
         self.message = 'happy'
 
     def run(self):
@@ -31,17 +32,25 @@ class autoSend(QThread):
             groups = itchat.get_chatrooms(update=True)
             while True:
                 i = 0
-                for group in groups:
-                    if group['NickName'] in groups_selects:
-                        itchat.send_msg("{}".format(self.message), group['UserName'])
-                        i = i+1
-                self.getMsgSignal.emit(self.message + "发送成功,合计发送"+str(len(groups_selects))+"个群,成功"+str(i)+"个,间隔"+ str(self.sleepTime) + "s")
-                sleep(self.sleepTime)
+                send = True
+
+                time = datetime.datetime.now().strftime('%H:%M')
+                if (time in self.timelist) and send:
+                    send = False
+                    for group in groups:
+                        if group['NickName'] in groups_selects:
+                            date = datetime.datetime.now().strftime('%m{}%d{} %H:00').format('月', '日')
+                            itchat.send_msg("{}".format(self.message).format(date), group['UserName'])
+                            i = i+1
+                    self.getMsgSignal.emit("{}".format(self.message).format(date) + "发送成功,合计发送"+str(len(groups_selects))+"个群,成功"+str(i)+"个")
+                else:
+                    send = True
+                sleep(59)
         except Exception as e:
             pass
 
     def setTime(self,time):
-        self.sleepTime = time
+        self.timelist = time.split(",");
 
     def setSendWords(self,sendWords):
         self.message = sendWords
